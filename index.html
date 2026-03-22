@@ -1,7 +1,7 @@
 <!DOCTYPE html>
-<html lang="ja">
-<head>
-<meta charset="UTF-8">
+<!-- saved from url=(0031)https://tools.nakaix.com/rifff/ -->
+<html lang="ja"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>rifff《ﾘｭﾌﾌ》</title>
 <style>
@@ -110,33 +110,50 @@
   .dl.fmt{background:var(--fmt-ln);border-left:3px solid var(--fmt-br)}
   .dl.eq {background:transparent;border-left:3px solid transparent}
   .dl.mt {background:var(--sur2);border-left:3px solid transparent;opacity:.2}
+
+  #wl{flex:1;overflow:auto;padding:20px 24px 32px;min-height:0;background:var(--bg)}
+  .wl-inner{max-width:720px}
+  .wl-title{font-size:11px;color:var(--mut);font-family:var(--fm);
+    text-transform:uppercase;letter-spacing:.1em;margin-bottom:12px}
+  .wl-list{list-style:none;display:flex;flex-direction:column;gap:6px}
+  .wl-list li{display:flex;align-items:baseline;gap:12px;
+    font-size:12px;line-height:1.6}
+  .wl-date{font-family:var(--fm);color:var(--mut);font-size:11px;
+    min-width:80px;flex-shrink:0}
+  .wl-msg{color:var(--txt);opacity:.75}
+  .wl-msg a{color:var(--acc);text-decoration:none}
+  .wl-msg a:hover{text-decoration:underline}
+  .wl-footer{margin-top:28px;font-size:11px;color:var(--mut);
+    font-family:var(--fm);border-top:1px solid var(--bor);padding-top:12px}
+  .wl-footer a{color:var(--acc);text-decoration:none}
+  .wl-footer a:hover{text-decoration:underline}
 </style>
 </head>
 <body>
 
 <header>
-  <h1>リッチテキスト比較ツール rifff《ﾘｭﾌﾌ》ver.1.0</h1>
+  <h1>リッチテキスト比較ツール rifff《ﾘｭﾌﾌ》ver.1.1</h1>
   <span class="badge bd-o">書式対応</span>
   <span class="badge bd-g">● ローカル処理 / データ送信なし</span>
 </header>
 
 <div id="inp">
-  <div class="ia" id="ia">
+  <div class="ia" id="ia" style="height: 420px;">
     <div class="ip">
       <div class="ph">
         <span class="pl">A — 変更前</span>
         <div class="tb">
-          <button data-cmd="bold"      title="太字 Ctrl+B"><b>B</b></button>
-          <button data-cmd="italic"    title="斜体 Ctrl+I"><i>I</i></button>
+          <button data-cmd="bold" title="太字 Ctrl+B"><b>B</b></button>
+          <button data-cmd="italic" title="斜体 Ctrl+I"><i>I</i></button>
           <button data-cmd="underline" title="下線 Ctrl+U"><u>U</u></button>
           <button data-cmd="superscript" title="上付き"><sup>x²</sup></button>
-          <button data-cmd="subscript"   title="下付き"><sub>x₂</sub></button>
+          <button data-cmd="subscript" title="下付き"><sub>x₂</sub></button>
         </div>
-        <span class="cc" id="ccA">0文字</span>
+        <span class="cc" id="ccA">641文字</span>
       </div>
       <div class="cw">
-        <div class="ce" contenteditable="true" id="eA" spellcheck="false"></div>
-        <div class="hint" id="hA">比較したいテキストを貼り付けてください
+        <div class="ce" contenteditable="true" id="eA" spellcheck="false">下記の文章を比較してください。<br>    The model organism Arabidopsis thaliana was grown under 16 h light / 8 h dark conditions. <br>Expression of the drought-response gene RD29A was quantified by RT-PCR.<br>Cellular ATP levels decreased by 42% after 48 h of dehydration stress (p &lt; 0.05).<br>CO2 assimilation was significantly impaired, whereas H2O loss increased 3-fold.<br>Protein abundance was confirmed by western blot (n = 3).<br>We conclude that dehydration activates the ABA signaling pathway in a dose-dependent manner.<br>These results suggest that plants, like graduate students,1 perform poorly under stress.<br><br>1 Botter BB et al. (2004) J. Fictional Plant Sci. 1, 1-23. [架空文献]</div>
+        <div class="hint" id="hA" style="display: none;">比較したいテキストを貼り付けてください
           <small>Wordなどからコピー&amp;ペーストで書式も保持されます<br>Ctrl+B / Ctrl+I / Ctrl+U で手動適用も可</small>
         </div>
       </div>
@@ -145,17 +162,17 @@
       <div class="ph">
         <span class="pl">B — 変更後</span>
         <div class="tb">
-          <button data-cmd="bold"      title="太字 Ctrl+B"><b>B</b></button>
-          <button data-cmd="italic"    title="斜体 Ctrl+I"><i>I</i></button>
+          <button data-cmd="bold" title="太字 Ctrl+B"><b>B</b></button>
+          <button data-cmd="italic" title="斜体 Ctrl+I"><i>I</i></button>
           <button data-cmd="underline" title="下線 Ctrl+U"><u>U</u></button>
           <button data-cmd="superscript" title="上付き"><sup>x²</sup></button>
-          <button data-cmd="subscript"   title="下付き"><sub>x₂</sub></button>
+          <button data-cmd="subscript" title="下付き"><sub>x₂</sub></button>
         </div>
-        <span class="cc" id="ccB">0文字</span>
+        <span class="cc" id="ccB">724文字</span>
       </div>
       <div class="cw">
-        <div class="ce" contenteditable="true" id="eB" spellcheck="false"></div>
-        <div class="hint" id="hB">比較したいテキストを貼り付けてください
+        <div class="ce" contenteditable="true" id="eB" spellcheck="false">下記の文章を，ﾋﾋ較してくだちい．<br>The model organism <i>Arabidopsis thaliana</i> was grown under 16 h light / 8 h dark conditions.<br>Expression of the drought-response gene <i>RD29A</i> was quantified by qRT-PCR.<br>Cellular ATP levels decreased by 57% after 48 h of dehydration stress (p &lt; 0.01).<br>CO<sub>2</sub> assimilation was significantly impaired, whereas H<sub>2</sub>O loss increased 3-fold.<br>Protein abundance was confirmed by <b>western blot</b> (n = 3).<br>We conclude that dehydration <b>strongly</b> activates the ABA signaling pathway in a dose-dependent manner.<br>These results suggest that plants, like graduate students,<sup>1,2</sup> perform poorly under stress.<br><br><sup>1</sup> Botter BB et al. (2004) <i>J. Fictional Plant Sci.</i> 1, 1-23. [架空文献]<br><sup>2</sup> Bitter J &amp; Batter AB (2024) <i>Imaginary Cell Physiol.</i> 99, 999-1000. [架空文献]</div>
+        <div class="hint" id="hB" style="display: none;">比較したいテキストを貼り付けてください
           <small>Wordなどからコピー&amp;ペーストで書式も保持されます<br>Ctrl+B / Ctrl+I / Ctrl+U で手動適用も可</small>
         </div>
       </div>
@@ -193,6 +210,27 @@
   <div class="rg">
     <div class="rc" id="cL"><div class="ch">A — 変更前</div></div>
     <div class="rc" id="cR"><div class="ch">B — 変更後</div></div>
+  </div>
+</div>
+
+<div id="wl">
+  <div class="wl-inner">
+    <p class="wl-title">新着情報：</p>
+    <ul class="wl-list">
+      <li>
+        <span class="wl-date">2026-03-22</span>
+        <span class="wl-msg"><a href="https://tools.nakaix.com/rifff/rifff-1.1.html" target="_blank">ver.1.1</a> ― 初期画面に新着情報を表示（difff《デュフフ》スタイル）。フッターにクレジット表記を追加</span>
+      </li>
+      <li>
+        <span class="wl-date">2026-03-21</span>
+        <span class="wl-msg"><a href="https://tools.nakaix.com/rifff/rifff-1.0.html" target="_blank">ver.1.0</a> 公開 ― リッチテキスト（太字・斜体・下線・上付き・下付き）の書式差分に対応したテキスト比較ツール</span>
+      </li>
+    </ul>
+    <p class="wl-footer">
+      <a href="https://tools.nakaix.com/rifff/" target="_blank">https://tools.nakaix.com/rifff/</a> /
+      <a href="https://github.com/TadashiNakai/rifff" target="_blank">GitHub</a><br>
+      Last modified on Mar 22, 2026 / Concept &amp; Design: <a href="https://x.com/TadashiNakai" target="_blank">@TadashiNakai</a> / Implementation: Claude (Anthropic)
+    </p>
   </div>
 </div>
 
@@ -869,9 +907,11 @@ function runDiff() {
     document.getElementById('nd').style.display = 'block';
     document.getElementById('ra').style.display = 'none';
     document.getElementById('stb').style.display = 'none';
+    document.getElementById('wl').style.display = 'none';
     return;
   }
   document.getElementById('nd').style.display = 'none';
+  document.getElementById('wl').style.display = 'none';
 
   let lH = '', rH = '';
   let lN = 1, rN = 1, cC = 0, cD = 0, cA = 0, cF = 0;
@@ -921,6 +961,7 @@ function runDiff() {
 
 function hideAll() {
   ['ra','stb','nd'].forEach(id => document.getElementById(id).style.display = 'none');
+  document.getElementById('wl').style.display = '';
 }
 
 // ═══════════════════════════════════════════════════════════════
@@ -976,5 +1017,6 @@ document.addEventListener('keydown', e => {
   ccB.textContent = eB.textContent.length.toLocaleString() + '文字';
 })();
 </script>
-</body>
-</html>
+
+
+</body></html>
