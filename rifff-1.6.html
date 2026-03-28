@@ -133,6 +133,11 @@
     color:var(--add-br);font-size:13px;font-family:var(--fm);flex-shrink:0}
 
   #ra{flex:1;overflow:auto;display:none;min-height:0;overflow-anchor:none}
+  #pf{display:none;padding:8px 28px 10px;font-size:11px;color:var(--mut);
+    font-family:var(--fm);border-top:1px solid var(--bor);
+    background:var(--bg);line-height:1.8;flex-shrink:0}
+  #pf a{color:var(--acc);text-decoration:none}
+  #pf a:hover{text-decoration:underline}
   .rg{display:grid;grid-template-columns:1fr 1fr;min-height:100%;overflow-anchor:none}
   .rc{font-family:var(--fm);font-size:13px;line-height:1.7;overflow-x:auto;overflow-anchor:none}
   .rc+.rc{border-left:1px solid var(--bor)}
@@ -172,7 +177,8 @@
     min-width:48px;text-align:center}
 
   #wl{flex:1;overflow:auto;padding:20px 28px 32px;background:var(--bg);
-    display:flex;gap:40px;flex-wrap:wrap;min-height:0}
+    display:flex;gap:40px;flex-wrap:wrap;min-height:0;
+    overflow-anchor:none;-webkit-overflow-scrolling:touch}
   .wl-desc{flex:1;min-width:260px}
   .wl-news{flex:1;min-width:260px}
   .wl-desc-title,.wl-news-title{font-size:10px;color:var(--mut);font-family:var(--fm);
@@ -193,7 +199,7 @@
   .wl-msg a:hover{text-decoration:underline}
   .wl-footer{margin-top:16px;font-size:11px;color:var(--mut);
     font-family:var(--fm);border-top:1px solid var(--bor);padding-top:10px;
-    line-height:1.8;width:100%}
+    line-height:1.8;width:100%;padding-bottom:env(safe-area-inset-bottom,16px)}
   .wl-footer a{color:var(--acc);text-decoration:none}
   .wl-footer a:hover{text-decoration:underline}
 </style>
@@ -299,6 +305,10 @@
     <div class="rc" id="cL"><div class="ch">A — 変更前</div></div>
     <div class="rc" id="cR"><div class="ch">B — 変更後</div></div>
   </div>
+</div>
+<div id="pf">
+  <a href="https://tools.nakaix.com/rifff/" target="_blank">https://tools.nakaix.com/rifff/</a> | <a href="https://github.com/TadashiNakai/rifff" target="_blank">GitHub</a><br>
+  Concept &amp; Design: <a href="https://x.com/TadashiNakai" target="_blank">@TadashiNakai</a> | Implementation: Claude (Anthropic)
 </div>
 
 <div id="wl">
@@ -984,6 +994,7 @@ function runDiff() {
     document.getElementById('wl').style.display  = 'none';
     document.getElementById('nav').style.display = 'none';
     document.getElementById('sav-section').style.display = 'none';
+    document.getElementById('pf').style.display = 'none';
     return;
   }
   document.getElementById('nd').style.display = 'none';
@@ -1024,6 +1035,7 @@ function runDiff() {
   document.getElementById('cL').innerHTML = '<div class="ch">A — 変更前</div>' + lH;
   document.getElementById('cR').innerHTML = '<div class="ch">B — 変更後</div>' + rH;
   document.getElementById('ra').style.display = 'block';
+  document.getElementById('pf').style.display = 'block';
 
   equalizeRowHeights();
 
@@ -1042,7 +1054,7 @@ function runDiff() {
 }
 
 function hideAll() {
-  ['ra','stb','nd','nav'].forEach(id => document.getElementById(id).style.display = 'none');
+  ['ra','stb','nd','nav','pf'].forEach(id => document.getElementById(id).style.display = 'none');
   document.getElementById('sav-section').style.display = 'none'; // ver.1.6
   document.getElementById('wl').style.display  = '';
 }
