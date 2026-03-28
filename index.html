@@ -132,9 +132,9 @@
   #nd{display:none;padding:18px;text-align:center;
     color:var(--add-br);font-size:13px;font-family:var(--fm);flex-shrink:0}
 
-  #ra{flex:1;overflow:auto;display:none;min-height:0}
-  .rg{display:grid;grid-template-columns:1fr 1fr;min-height:100%}
-  .rc{font-family:var(--fm);font-size:13px;line-height:1.7;overflow-x:auto}
+  #ra{flex:1;overflow:auto;display:none;min-height:0;overflow-anchor:none}
+  .rg{display:grid;grid-template-columns:1fr 1fr;min-height:100%;overflow-anchor:none}
+  .rc{font-family:var(--fm);font-size:13px;line-height:1.7;overflow-x:auto;overflow-anchor:none}
   .rc+.rc{border-left:1px solid var(--bor)}
   .ch{font-size:10px;color:var(--mut);padding:6px 12px;
     background:var(--sur);border-bottom:1px solid var(--bor);
