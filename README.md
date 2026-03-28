@@ -3,6 +3,7 @@
 **リッチテキスト対応の差分比較ツール**
 
 [![Version](https://img.shields.io/badge/version-1.6-blue)](https://tools.nakaix.com/rifff/)
+[![License](https://img.shields.io/badge/license-MIT-green)](LICENSE)
 
 ---
 
