@@ -2,7 +2,7 @@
 
 **リッチテキスト対応の差分比較ツール**
 
-[![Version](https://img.shields.io/badge/version-1.7-blue)](https://tools.nakaix.com/rifff/)
+[![Version](https://img.shields.io/badge/version-1.8-blue)](https://tools.nakaix.com/rifff/)
 [![License](https://img.shields.io/badge/license-MIT-green)](LICENSE)
 
 ---
@@ -46,7 +46,7 @@
 ## ファイル構成
 
 ```
-index.html          現行バージョン（ver.1.7）
+index.html          現行バージョン（ver.1.8）
 rifff-1.0.html      ver.1.0 アーカイブ
 rifff-1.1.html      ver.1.1 アーカイブ
 rifff-1.2.html      ver.1.2 アーカイブ
@@ -55,6 +55,7 @@ rifff-1.4.html      ver.1.4 アーカイブ
 rifff-1.5.html      ver.1.5 アーカイブ
 rifff-1.6.html      ver.1.6 アーカイブ
 rifff-1.7.html      ver.1.7 アーカイブ
+rifff-1.8.html      ver.1.8 アーカイブ
 ```
 
 単一の HTML ファイルで完結しています。ダウンロードしてブラウザで開くだけで動作します。
@@ -65,6 +66,7 @@ rifff-1.7.html      ver.1.7 アーカイブ
 
 | バージョン | 日付 | 内容 |
 |---|---|---|
+| ver.1.8 | 2026-04-12 | ペースト時のサニタイズ強化、巨大入力に対する保護を追加 |
 | ver.1.7 | 2026-04-02 | rifff専用のアイコンを読み込むようにした |
 | ver.1.6 | 2026-03-28 | 比較結果を HTML ファイルとして保存する機能を追加。ダーク／ライトテーマ切り替え機能を追加 |
 | ver.1.5 | 2026-03-23 | 比較実行後、入力エディタ左右のスクロール位置を行対応に基づき同期 |
