@@ -2,7 +2,7 @@
 
 **リッチテキスト対応の差分比較ツール**
 
-[![Version](https://img.shields.io/badge/version-1.10-blue)](https://tools.nakaix.com/rifff/)
+[![Version](https://img.shields.io/badge/version-1.11-blue)](https://tools.nakaix.com/rifff/)
 [![License](https://img.shields.io/badge/license-MIT-green)](LICENSE)
 
 ---
@@ -46,7 +46,7 @@
 ## ファイル構成
 
 ```
-index.html          現行バージョン（ver.1.10）
+index.html          現行バージョン（ver.1.11）
 rifff-1.0.html      ver.1.0 アーカイブ
 rifff-1.1.html      ver.1.1 アーカイブ
 rifff-1.2.html      ver.1.2 アーカイブ
@@ -58,6 +58,7 @@ rifff-1.7.html      ver.1.7 アーカイブ
 rifff-1.8.html      ver.1.8 アーカイブ
 rifff-1.9.html      ver.1.9 アーカイブ
 rifff-1.10.html     ver.1.10 アーカイブ
+rifff-1.11.html     ver.1.11 アーカイブ
 ```
 
 単一の HTML ファイルで完結しています。ダウンロードしてブラウザで開くだけで動作します。
@@ -68,6 +69,7 @@ rifff-1.10.html     ver.1.10 アーカイブ
 
 | バージョン | 日付 | 内容 |
 |---|---|---|
+| ver.1.11 | 2026-05-02 | 空行で挟まれた類似行が横並びにならない不具合を修正。対応行のない箇所を斜めストライプで明示。差分結果レンダリングと HTML 保存機能を DOM API ベースに変更（XSS 耐性向上）。LCS の大入力時メモリ確保にガードを追加 |
 | ver.1.10 | 2026-04-25 | 空行が差分表示で無視される不具合を修正。追加・削除された空行を色帯として表示するように |
 | ver.1.9 | 2026-04-21 | 改行位置のずれを自動整列する前処理を追加 |
 | ver.1.8 | 2026-04-12 | ペースト時のサニタイズ強化、巨大入力に対する保護を追加 |
@@ -84,8 +86,10 @@ rifff-1.10.html     ver.1.10 アーカイブ
 
 ## 関連プロジェクト
 
-- [fuseji《ふせじ》](https://github.com/TadashiNakai/fuseji) — 個人情報マスキングツール（同作者）
-- [difff《ﾃﾞｭﾌﾌ》](https://difff.jp/) — 本ツールが着想を得たテキスト差分ツール
+- [tools.nakaix.com](https://tools.nakaix.com/) — Tadashi Nakai が公開しているツール群のポータル
+- [fuseji 《ふせじ》](https://fuseji.jp/) — 個人情報マスキングツール（同作者）
+- [mwcalc 《MWCALC》](https://tools.nakaix.com/mwcalc/) — 化学式から分子量を計算するツール（同作者）
+- [difff 《ﾃﾞｭﾌﾌ》](https://difff.jp/) — 本ツールが着想を得たテキスト差分ツール
 
 ---
 
