@@ -2,8 +2,8 @@
 
 **リッチテキスト対応の差分比較ツール**
 
-[![Version](https://img.shields.io/badge/version-1.11-blue)](https://tools.nakaix.com/rifff/)
-[![License](https://img.shields.io/badge/license-MIT-green)](LICENSE)
+[![Version](https://img.shields.io/badge/version-1.12-blue)](https://tools.nakaix.com/rifff/)
+[![License](https://img.shields.io/badge/license-MIT%20%2F%20GPL-green)](LICENSE)
 
 ---
 
@@ -46,7 +46,7 @@
 ## ファイル構成
 
 ```
-index.html          現行バージョン（ver.1.11）
+index.html          現行バージョン（ver.1.12）
 rifff-1.0.html      ver.1.0 アーカイブ
 rifff-1.1.html      ver.1.1 アーカイブ
 rifff-1.2.html      ver.1.2 アーカイブ
@@ -59,6 +59,7 @@ rifff-1.8.html      ver.1.8 アーカイブ
 rifff-1.9.html      ver.1.9 アーカイブ
 rifff-1.10.html     ver.1.10 アーカイブ
 rifff-1.11.html     ver.1.11 アーカイブ
+rifff-1.12.html     ver.1.12 アーカイブ
 ```
 
 単一の HTML ファイルで完結しています。ダウンロードしてブラウザで開くだけで動作します。
@@ -69,6 +70,7 @@ rifff-1.11.html     ver.1.11 アーカイブ
 
 | バージョン | 日付 | 内容 |
 |---|---|---|
+| ver.1.12 | 2026-06-07 | 行内（インライン）差分エンジンを GNU diff -d（Myers 法 + 変更境界の整列）に置換。改行のない長い行でも差分が縮退せず、変更箇所の境界がより自然に。改行位置の自動整列（前処理）も同エンジンを用い、より大きな領域まで整列できるように。[difff-js](https://tools.nakaix.com/difff-js/) と同一アルゴリズムを共有 |
 | ver.1.11 | 2026-05-02 | 空行で挟まれた類似行が横並びにならない不具合を修正。対応行のない箇所を斜めストライプで明示。差分結果レンダリングと HTML 保存機能を DOM API ベースに変更（XSS 耐性向上）。LCS の大入力時メモリ確保にガードを追加 |
 | ver.1.10 | 2026-04-25 | 空行が差分表示で無視される不具合を修正。追加・削除された空行を色帯として表示するように |
 | ver.1.9 | 2026-04-21 | 改行位置のずれを自動整列する前処理を追加 |
@@ -90,6 +92,14 @@ rifff-1.11.html     ver.1.11 アーカイブ
 - [fuseji 《ふせじ》](https://fuseji.jp/) — 個人情報マスキングツール（同作者）
 - [mwcalc 《MWCALC》](https://tools.nakaix.com/mwcalc/) — 化学式から分子量を計算するツール（同作者）
 - [difff 《ﾃﾞｭﾌﾌ》](https://difff.jp/) — 本ツールが着想を得たテキスト差分ツール
+- [difff-js](https://tools.nakaix.com/difff-js/) — difff の JavaScript 移植版（同作者）。v1.12 で差分アルゴリズムを共有
+
+---
+
+## ライセンス
+
+本ツールのオリジナルコード部分は [MIT License](LICENSE) です。
+ただし、インライン差分計算エンジンとして GNU diffutils のアルゴリズム（Myers法 + shift_boundaries）の JavaScript 移植版を含んでいます。GNU diffutils は GPL（GNU General Public License）で提供されているため、これらを結合した本ツール全体（HTMLファイル）を再配布・改変して公開する際には、全体に対して **GPL の条項が適用**されます。
 
 ---
 

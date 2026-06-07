@@ -236,7 +236,7 @@
 
 <header>
   <h1>リッチテキスト比較ツール rifff《ﾘｭﾌﾌ》</h1>
-  <span class="badge bd-v">v1.11</span>
+  <span class="badge bd-v">v1.12</span>
   <span class="badge bd-o">書式対応</span>
   <span class="badge bd-g">● ローカル処理 / データ送信なし</span>
 </header>
@@ -375,6 +375,7 @@
   <div class="wl-news">
     <p class="wl-news-title">新着情報：</p>
     <ul class="wl-list">
+      <li><span class="wl-date">2026-06-07</span><span class="wl-msg"><a href="https://tools.nakaix.com/rifff/rifff-1.12.html" target="_blank">ver.1.12</a> — 行内（インライン）差分エンジンを GNU diff -d（Myers 法 + 変更境界の整列）に置換。改行のない長い行でも差分が縮退せず、変更箇所の境界がより自然に。改行位置の自動整列（前処理）も同エンジンを用い、より大きな領域まで整列できるように。<a href="https://tools.nakaix.com/difff-js/" target="_blank">difff-js</a> と同一アルゴリズムを共有</span></li>
       <li><span class="wl-date">2026-05-02</span><span class="wl-msg"><a href="https://tools.nakaix.com/rifff/rifff-1.11.html" target="_blank">ver.1.11</a> — 内部リファクタリング：差分結果のレンダリングを DOM API ベースに変更（XSS 耐性向上）。対応行のない箇所を斜めストライプで明示。LCS の大入力時メモリ確保にガードを追加</span></li>
       <li><span class="wl-date">2026-04-25</span><span class="wl-msg"><a href="https://tools.nakaix.com/rifff/rifff-1.10.html" target="_blank">ver.1.10</a> — 空行が差分表示で無視される不具合を修正。追加・削除された空行を色帯として表示するように</span></li>
       <li><span class="wl-date">2026-04-21</span><span class="wl-msg"><a href="https://tools.nakaix.com/rifff/rifff-1.9.html" target="_blank">ver.1.9</a> — 改行位置のずれを自動整列する前処理を追加。80文字折り返しなど機械的改行を含むテキストでも差分を正確に検出できるように</span></li>
@@ -396,6 +397,41 @@
 </div>
 
 <script>
+/*
+ * rifff
+ *
+ * This software includes a JavaScript port of the diff algorithm from GNU diffutils.
+ * Copyright (C) 1988-1989, 1992-1995, 1998, 2001-2002, 2004, 2006-2007, 2009-2013,
+ * 2015-2025 Free Software Foundation, Inc.
+ * This program is free software: you can redistribute it and/or modify it
+ * under the terms of the GNU General Public License as published by the
+ * Free Software Foundation, either version 3 of the License, or (at your option)
+ * any later version.
+ *
+ * -------------------------------------------------------------------------
+ * The rest of this software is licensed under the MIT License:
+ *
+ * Copyright (c) 2026 Tadashi Nakai
+ *
+ * Permission is hereby granted, free of charge, to any person obtaining a copy
+ * of this software and associated documentation files (the "Software"), to deal
+ * in the Software without restriction, including without limitation the rights
+ * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+ * copies of the Software, and to permit persons to whom the Software is
+ * furnished to do so, subject to the following conditions:
+ *
+ * The above copyright notice and this permission notice shall be included in all
+ * copies or substantial portions of the Software.
+ *
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+ * SOFTWARE.
+ */
+
 // ═══════════════════════════════════════════════════════════════
 // 1. RESIZE
 // ═══════════════════════════════════════════════════════════════
@@ -867,6 +903,125 @@ function lcs(a, b) {
 }
 
 // ═══════════════════════════════════════════════════════════════
+// 5b. GNU diff -d ENGINE (Myers + shift_boundaries) — v1.12
+// ═══════════════════════════════════════════════════════════════
+// インライン（行内）char 差分に用いる差分エンジン。difff-js と同じ
+// GNU diffutils analyze.c（双方向 Myers + shift_boundaries）の移植版。
+// 従来の O(mn) DP（lcs）は 1 行が長くなるとセルキャップに達して
+// 全 del+全 ins へ縮退したが、Myers は O(ND) でその崖が無く、境界も
+// diff -d 同様に整う。行レベル LCS と前処理は従来どおり lcs() を使う。
+//
+// GNU analyze.c: compareseq / diag（双方向 middle-snake, minimal）
+function gnuMyersChanged(xkeys, ykeys) {
+  const N = xkeys.length, M = ykeys.length;
+  const codeMap = new Map(); let next = 1;
+  const xv = new Int32Array(N), yv = new Int32Array(M);
+  for (let i = 0; i < N; i++) { let c = codeMap.get(xkeys[i]); if (c === undefined) { c = next++; codeMap.set(xkeys[i], c); } xv[i] = c; }
+  for (let i = 0; i < M; i++) { let c = codeMap.get(ykeys[i]); if (c === undefined) { c = next++; codeMap.set(ykeys[i], c); } yv[i] = c; }
+  const changedA = new Array(N).fill(false), changedB = new Array(M).fill(false);
+  const diags = N + M + 3;
+  const fdiag = new Int32Array(2 * diags + 4), bdiag = new Int32Array(2 * diags + 4);
+  const foff = M + 2, boff = M + 2;
+  const FD = (d) => fdiag[foff + d], SFD = (d, v) => { fdiag[foff + d] = v; };
+  const BD = (d) => bdiag[boff + d], SBD = (d, v) => { bdiag[boff + d] = v; };
+  function diag(xoff, xlim, yoff, ylim, part) {
+    const dmin = xoff - ylim, dmax = xlim - yoff;
+    const fmid = xoff - yoff, bmid = xlim - ylim;
+    let fmin = fmid, fmax = fmid, bmin = bmid, bmax = bmid;
+    const odd = ((fmid - bmid) & 1) !== 0;
+    SFD(fmid, xoff); SBD(bmid, xlim);
+    for (let c = 1; ; c++) {
+      if (fmin > dmin) SFD(--fmin - 1, -1); else ++fmin;
+      if (fmax < dmax) SFD(++fmax + 1, -1); else --fmax;
+      for (let d = fmax; d >= fmin; d -= 2) {
+        let tlo = FD(d - 1), thi = FD(d + 1);
+        let x = (tlo >= thi) ? tlo + 1 : thi; let y = x - d;
+        while (x < xlim && y < ylim && xv[x] === yv[y]) { x++; y++; }
+        SFD(d, x);
+        if (odd && bmin <= d && d <= bmax && BD(d) <= x) { part.xmid = x; part.ymid = y; return; }
+      }
+      if (bmin > dmin) SBD(--bmin - 1, 0x7fffffff); else ++bmin;
+      if (bmax < dmax) SBD(++bmax + 1, 0x7fffffff); else --bmax;
+      for (let d = bmax; d >= bmin; d -= 2) {
+        let tlo = BD(d - 1), thi = BD(d + 1);
+        let x = (tlo < thi) ? tlo : thi - 1; let y = x - d;
+        while (x > xoff && y > yoff && xv[x - 1] === yv[y - 1]) { x--; y--; }
+        SBD(d, x);
+        if (!odd && fmin <= d && d <= fmax && x <= FD(d)) { part.xmid = x; part.ymid = y; return; }
+      }
+      // minimal=true のためヒューリスティックは使用しない
+    }
+  }
+  function compareseq(xoff, xlim, yoff, ylim) {
+    while (xoff < xlim && yoff < ylim && xv[xoff] === yv[yoff]) { xoff++; yoff++; }
+    while (xlim > xoff && ylim > yoff && xv[xlim - 1] === yv[ylim - 1]) { xlim--; ylim--; }
+    if (xoff === xlim) { while (yoff < ylim) changedB[yoff++] = true; }
+    else if (yoff === ylim) { while (xoff < xlim) changedA[xoff++] = true; }
+    else {
+      const part = { xmid: 0, ymid: 0 };
+      diag(xoff, xlim, yoff, ylim, part);
+      compareseq(xoff, part.xmid, yoff, part.ymid);
+      compareseq(part.xmid, xlim, part.ymid, ylim);
+    }
+  }
+  compareseq(0, N, 0, M);
+  return { changedA, changedB };
+}
+
+// GNU analyze.c: shift_boundaries（変更領域を末尾方向へ寄せ、隣接ハンクを併合）
+function gnuShiftBoundaries(equivs, changed, otherChanged) {
+  const i_end = equivs.length;
+  const ch = (arr, idx) => (idx < 0 || idx >= arr.length ? false : arr[idx]);
+  let i = 0, j = 0;
+  while (true) {
+    let runlength, start, corresponding;
+    while (i < i_end && !changed[i]) { while (ch(otherChanged, j)) j++; j++; i++; }
+    if (i === i_end) break;
+    start = i; i++;
+    while (ch(changed, i)) i++;
+    while (ch(otherChanged, j)) j++;
+    do {
+      runlength = i - start;
+      while (start > 0 && equivs[start - 1] === equivs[i - 1]) {
+        changed[--start] = true; changed[--i] = false;
+        while (ch(changed, start - 1)) start--;
+        j--; while (ch(otherChanged, j)) j--;
+      }
+      corresponding = ch(otherChanged, j - 1) ? i : i_end;
+      while (i !== i_end && equivs[start] === equivs[i]) {
+        changed[start++] = false; changed[i++] = true;
+        while (ch(changed, i)) i++;
+        j++; while (ch(otherChanged, j)) { corresponding = i; j++; }
+      }
+    } while (runlength !== i - start);
+    while (corresponding < i) { changed[--start] = true; changed[--i] = false; j--; while (ch(otherChanged, j)) j--; }
+  }
+}
+
+// char 配列 a, b を diff -d で比較し、inlineDiff が消費する
+// {op,iA,iB} の順序付き配列（従来の lcs() と同形式）を返す。
+function inlineDiffOps(a, b) {
+  const N = a.length, M = b.length;
+  const { changedA, changedB } = gnuMyersChanged(a, b);
+  // 変更境界を整列（f=0, f=1 の順、equivs として元の char 配列を使用）
+  gnuShiftBoundaries(a, changedA, changedB);
+  gnuShiftBoundaries(b, changedB, changedA);
+  const chA = (k) => (k >= 0 && k < N ? changedA[k] : false);
+  const chB = (k) => (k >= 0 && k < M ? changedB[k] : false);
+  const ops = [];
+  let i = 0, j = 0;
+  while (i < N || j < M) {
+    if (chA(i) || chB(j)) {
+      while (chA(i)) { ops.push({ op:'del', iA:i }); i++; }
+      while (chB(j)) { ops.push({ op:'ins', iB:j }); j++; }
+    }
+    if (i < N && j < M) ops.push({ op:'eq', iA:i, iB:j });
+    i++; j++;
+  }
+  return ops;
+}
+
+// ═══════════════════════════════════════════════════════════════
 // 6. INLINE DIFF WITH FORMAT AWARENESS
 // ═══════════════════════════════════════════════════════════════
 // ↲（brk マーカー）は他の文字と同様に扱う（v1.9）。
@@ -875,7 +1030,7 @@ function lcs(a, b) {
 function inlineDiff(tokA, tokB) {
   const chA = tokA.map(t => t.ch);
   const chB = tokB.map(t => t.ch);
-  const ops = lcs(chA, chB);
+  const ops = inlineDiffOps(chA, chB);  // v1.12: GNU diff -d（Myers + shift_boundaries）
   return ops.map(({ op, iA, iB }) => {
     if (op === 'eq') {
       const a = tokA[iA], b = tokB[iB];
@@ -1033,15 +1188,14 @@ function equalizeRowHeights() {
 //     一方に余分な改行がある場合に行を自動連結してから差分を取る
 // ═══════════════════════════════════════════════════════════════
 
-// 不一致領域ごとの処理上限（これを超えるペアは連結判定をスキップ）
-// 論文1段落（~1500文字）同士でも処理できる値に設定
-// 不一致領域ごとの処理上限（これを超えるペアは連結判定をスキップ）
-// 論文1段落（~1500文字）同士でも処理できる値に設定
-// PP_PRODUCT_CAP は LCS_DP_CELL_CAP と同じオーダーに整合
-// PP_SIDE_CAP は単独で過剰なメモリ確保を防ぐためのガード
-const PP_PRODUCT_CAP = 10_000_000;  // aChars.length * bChars.length
-const PP_SIDE_CAP    = 5_000;       // aChars.length または bChars.length
-const PP_SIM_RATIO   = 0.4;         // 類似度下限：LCS長 / 平均文字数
+// 不一致領域ごとの処理上限（これを超えるペアは連結判定をスキップ）。
+// v1.12: 領域内 char 差分を Myers（inlineDiffOps）に変更したため、DP テーブル用の
+// メモリ上限だった PP_PRODUCT_CAP（N×M）は不要になり撤廃。Myers はメモリ線形で
+// 時間は O(N·D)（D=編集距離）なので、最悪時間（大きく かつ 大きく異なる領域）を
+// 抑えるために片側の文字数だけを上限とする。最悪 D≈2N でも N·2N が概ね 10^8 に
+// 収まる値（旧実装は積 10M で実効的に片側 ~3000 字で諦めていた）。
+const PP_SIDE_CAP    = 8_000;   // aChars.length または bChars.length の上限
+const PP_SIM_RATIO   = 0.4;     // 類似度下限：一致長 / 平均文字数
 
 // 1 文字目のトークン形式を引き継いだ ↲ マーカーを作る
 function makeBrkTok() {
@@ -1105,14 +1259,13 @@ function analyzeRegionLineBreaks(delLines, insLines) {
     }
   }
 
-  // サイズガード
-  if (aChars.length > PP_SIDE_CAP || bChars.length > PP_SIDE_CAP ||
-      aChars.length * bChars.length > PP_PRODUCT_CAP) {
+  // サイズガード（v1.12: Myers はメモリ線形のため積ではなく片側長で制限）
+  if (aChars.length > PP_SIDE_CAP || bChars.length > PP_SIDE_CAP) {
     return { lA: delLines, lB: insLines };
   }
 
-  // 文字単位 LCS
-  const ops = lcs(aChars, bChars);
+  // 領域内 char 差分（v1.12: GNU diff -d / Myers + shift_boundaries）
+  const ops = inlineDiffOps(aChars, bChars);
 
   // 類似度チェック
   let eqCount = 0;
@@ -1791,7 +1944,7 @@ td.lc.eq, td.lc.mt{border-left:3px solid transparent}
 ${tableRows}  </tbody>
 </table>
 <p class="footer">
-  Generated by <a href="https://tools.nakaix.com/rifff/" target="_blank">rifff《ﾘｭﾌﾌ》ver.1.11</a>
+  Generated by <a href="https://tools.nakaix.com/rifff/" target="_blank">rifff《ﾘｭﾌﾌ》ver.1.12</a>
   ― ローカル処理 / データ送信なし /
   Concept &amp; Design: <a href="https://x.com/TadashiNakai" target="_blank">@TadashiNakai</a> /
   Implementation: Claude (Anthropic)
