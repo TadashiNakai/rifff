@@ -1,0 +1,2057 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>rifff《ﾘｭﾌﾌ》</title>
+<link rel="icon" href="https://tools.nakaix.com/rifff/favicon.png" type="image/png">
+<style>
+  :root {
+    --bg:#0e1117; --sur:#161b22; --sur2:#1c2330;
+    --bor:#30363d; --txt:#e6edf3; --mut:#8b949e; --acc:#58a6ff;
+    --del-ln:#3d1f1f; --del-br:#ff6b6b;
+    --add-ln:#1a2f1a; --add-br:#3fb950;
+    --fmt-ln:#261c08; --fmt-br:#ffa020; --fmt-fg:#ffc060;
+    --hl-del-bg:rgba(255,68,68,.38);  --hl-del-fg:#ff9999;
+    --hl-add-bg:rgba(86,211,100,.30); --hl-add-fg:#7ee787;
+    --hl-fmt-bg:rgba(255,150,0,.42);  --hl-fmt-fg:#ffd080;
+    --ln-color:#6e7a8a;
+    --ce-focus:#1e2535;
+    --fm:'JetBrains Mono','Courier New',monospace;
+    --fu:'Noto Sans JP',sans-serif;
+  }
+  body.light {
+    --bg:#f6f8fa; --sur:#ffffff; --sur2:#f0f2f5;
+    --bor:#d0d7de; --txt:#1f2328; --mut:#656d76; --acc:#0969da;
+    --del-ln:#ffd7d7; --del-br:#cf222e;
+    --add-ln:#ccf0d4; --add-br:#1a7f37;
+    --fmt-ln:#fde8a0; --fmt-br:#bf8700; --fmt-fg:#7d4e00;
+    --hl-del-bg:rgba(207,34,46,.18);  --hl-del-fg:#a0000a;
+    --hl-add-bg:rgba(26,127,55,.20);  --hl-add-fg:#0a6020;
+    --hl-fmt-bg:rgba(191,135,0,.25);  --hl-fmt-fg:#7d4e00;
+    --ln-color:#8090a0;
+    --ce-focus:#e8edf2;
+  }
+  body.light .bd-v{background:#eaedf2;color:#555e6d;border-color:#c8cdd6}
+  body.light .bd-o{background:#fff3cd;color:#7d4e00;border-color:#f0c060}
+  body.light .bd-g{background:#d4f5de;color:#1a7f37;border-color:#a3d9b1}
+  body.light #menu-btn{color:var(--mut)}
+  body.light .dl.mt{
+    background-image:repeating-linear-gradient(
+      135deg,
+      transparent 0,
+      transparent 6px,
+      rgba(0,0,0,.05) 6px,
+      rgba(0,0,0,.05) 7px
+    );
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{background:var(--bg);color:var(--txt);font-family:var(--fu);
+    height:100vh;display:flex;flex-direction:column;overflow:hidden}
+
+  header{border-bottom:1px solid var(--bor);padding:11px 18px;
+    display:flex;align-items:center;gap:10px;background:var(--sur);flex-shrink:0}
+  header h1{font-size:16px;font-weight:700}
+  .badge{font-size:10px;border-radius:10px;padding:2px 8px;font-family:var(--fm)}
+  .bd-v{background:#1e1e2e;color:#6e7a96;border:1px solid #2e3250}
+  .bd-b{background:#1f3a5f;color:var(--acc);border:1px solid #2d5a8e}
+  .bd-o{background:#2a1800;color:var(--fmt-fg);border:1px solid #4a3000}
+  .bd-g{background:#1a2f1a;color:var(--add-br);border:1px solid #2d5a2d;margin-left:auto}
+  /* ── … メニュー ── */
+  #menu-wrap{position:relative}
+  #menu-btn{background:transparent;color:var(--mut);border:1px solid var(--bor);
+    padding:5px 12px;border-radius:6px;font-size:12px;font-family:var(--fu);
+    cursor:pointer;transition:all .15s;line-height:1}
+  #menu-btn:hover{color:var(--txt);border-color:var(--mut)}
+  #menu-drop{display:none;position:absolute;left:0;top:calc(100% + 6px);
+    background:var(--sur);border:1px solid var(--bor);border-radius:7px;
+    min-width:140px;box-shadow:0 6px 20px rgba(0,0,0,.35);z-index:100;overflow:hidden}
+  #menu-drop.open{display:block}
+  .menu-section{padding:5px 0;border-bottom:1px solid var(--bor)}
+  .menu-section:last-child{border-bottom:none}
+  .menu-label{font-size:9px;color:var(--mut);padding:5px 13px 2px;
+    text-transform:uppercase;letter-spacing:.08em;font-family:var(--fm)}
+  .menu-item{display:flex;align-items:center;gap:8px;width:100%;background:transparent;
+    border:none;color:var(--txt);font-size:12px;font-family:var(--fm);
+    padding:6px 13px;cursor:pointer;text-align:left;transition:background .1s}
+  .menu-item:hover{background:var(--sur2)}
+  .menu-item.active{color:var(--acc)}
+  .menu-item .mi-icon{width:14px;text-align:center;font-size:11px}
+
+  #inp{flex-shrink:0;display:flex;flex-direction:column}
+  .ia{display:grid;grid-template-columns:1fr 1fr;
+    height:260px;min-height:80px;max-height:80vh;
+    border-bottom:1px solid var(--bor)}
+  .ip{display:flex;flex-direction:column;overflow:hidden}
+  .ip+.ip{border-left:1px solid var(--bor)}
+  .ph{display:flex;align-items:center;gap:5px;padding:5px 11px;
+    background:var(--sur);border-bottom:1px solid var(--bor);flex-shrink:0}
+  .pl{font-size:10px;color:var(--mut);font-family:var(--fm);
+    text-transform:uppercase;letter-spacing:.05em;flex:1}
+  .tb{display:flex;gap:2px}
+  .tb button{background:transparent;border:1px solid var(--bor);color:var(--mut);
+    width:22px;height:22px;border-radius:3px;cursor:pointer;font-size:11px;
+    display:flex;align-items:center;justify-content:center;
+    transition:all .15s;padding:0;font-family:var(--fm)}
+  .tb button:hover{color:var(--txt);border-color:var(--mut)}
+  .cc{font-size:10px;color:var(--mut);opacity:.5;font-family:var(--fm)}
+
+  .cw{position:relative;flex:1;overflow:hidden}
+  .ce{width:100%;height:100%;background:var(--sur2);color:var(--txt);
+    font-family:var(--fm);font-size:13px;line-height:1.65;
+    padding:10px 12px;outline:none;overflow-y:auto;
+    white-space:pre-wrap;word-break:break-word}
+  .ce:focus{background:var(--ce-focus)}
+  .hint{position:absolute;top:10px;left:12px;color:var(--mut);opacity:.38;
+    pointer-events:none;font-family:var(--fm);font-size:12px;line-height:1.65}
+  .hint small{font-size:10px;display:block;margin-top:3px}
+
+  #rh{height:7px;background:var(--sur);border-top:1px solid var(--bor);
+    cursor:ns-resize;display:flex;align-items:center;justify-content:center;
+    flex-shrink:0;user-select:none;transition:background .15s}
+  #rh:hover,#rh.d{background:#222c3a}
+  #rh::after{content:'';width:28px;height:2px;border-radius:1px;
+    background:var(--bor);transition:background .15s}
+  #rh:hover::after,#rh.d::after{background:var(--acc)}
+
+  .ctrl{padding:8px 16px;display:flex;align-items:center;gap:8px;
+    background:var(--sur);border-bottom:1px solid var(--bor);
+    flex-shrink:0;flex-wrap:wrap}
+  #cmp{background:var(--acc);color:#0d1117;border:none;
+    padding:5px 20px;border-radius:6px;font-size:12px;font-weight:700;
+    font-family:var(--fu);cursor:pointer;transition:opacity .15s}
+  #cmp:hover{opacity:.85}
+  #clr{background:transparent;color:var(--mut);border:1px solid var(--bor);
+    padding:5px 12px;border-radius:6px;font-size:12px;
+    font-family:var(--fu);cursor:pointer;transition:color .15s,border-color .15s}
+  #clr:hover{color:var(--txt);border-color:var(--mut)}
+  .sg{display:flex;align-items:center;gap:3px;margin-left:6px}
+  .sl{font-size:10px;color:var(--mut)}
+  .sb{background:transparent;color:var(--mut);border:1px solid var(--bor);
+    padding:2px 7px;border-radius:3px;font-size:10px;font-family:var(--fm);
+    cursor:pointer;transition:all .15s}
+  .sb:hover{color:var(--acc);border-color:var(--acc)}
+  .leg{display:flex;gap:12px;margin-left:auto;flex-wrap:wrap}
+  .li{display:flex;align-items:center;gap:4px;font-size:10px;
+    color:var(--mut);font-family:var(--fm)}
+  .ld{width:7px;height:7px;border-radius:2px}
+
+  #stb{display:none;padding:4px 16px;font-size:10px;color:var(--mut);
+    font-family:var(--fm);background:var(--sur);
+    border-bottom:1px solid var(--bor);gap:14px;align-items:center;flex-shrink:0}
+  #nd{display:none;padding:18px;text-align:center;
+    color:var(--add-br);font-size:13px;font-family:var(--fm);flex-shrink:0}
+
+  #ra{flex:1;overflow:auto;display:none;min-height:0;overflow-anchor:none}
+  #pf{display:none;padding:10px 28px 16px;font-size:11px;color:var(--mut);
+    font-family:var(--fm);border-top:1px solid var(--bor);
+    background:var(--bg);line-height:1.8}
+  #pf a{color:var(--acc);text-decoration:none}
+  #pf a:hover{text-decoration:underline}
+  .rg{display:grid;grid-template-columns:1fr 1fr;min-height:100%;overflow-anchor:none}
+  .rc{font-family:var(--fm);font-size:13px;line-height:1.7;overflow-x:auto;overflow-anchor:none}
+  .rc+.rc{border-left:1px solid var(--bor)}
+  .ch{font-size:10px;color:var(--mut);padding:6px 12px;
+    background:var(--sur);border-bottom:1px solid var(--bor);
+    text-transform:uppercase;letter-spacing:.05em;position:sticky;top:0;z-index:1}
+  .dl{display:flex;min-height:1.7em}
+  .ln{min-width:36px;text-align:right;padding:0 6px 0 3px;
+    color:var(--ln-color);user-select:none;font-size:10px;
+    flex-shrink:0;border-right:1px solid var(--bor);
+    background:var(--sur2);line-height:1.7}
+  .lc{flex:1;padding:0 9px;white-space:pre-wrap;word-break:break-all;line-height:1.7}
+  .dl.del{background:var(--del-ln);border-left:none}
+  .dl.add{background:var(--add-ln);border-left:none}
+  .dl.fmt{background:var(--fmt-ln);border-left:none}
+  .dl.eq {background:transparent;border-left:none}
+  /* 対応行なし（ゴースト）：斜めストライプで明示 */
+  .dl.mt {
+    border-left:none;
+    background-color:var(--sur2);
+    background-image:repeating-linear-gradient(
+      135deg,
+      transparent 0,
+      transparent 6px,
+      rgba(255,255,255,.04) 6px,
+      rgba(255,255,255,.04) 7px
+    );
+  }
+  .dl.mt .ln{background:var(--sur2);opacity:.5}
+  .dl.mt .lc{opacity:.6}
+  .dl.del .lc{border-left:3px solid var(--del-br)}
+  .dl.add .lc{border-left:3px solid var(--add-br)}
+  .dl.fmt .lc{border-left:3px solid var(--fmt-br)}
+  .dl.eq  .lc, .dl.mt .lc{border-left:3px solid transparent}
+  /* インライン差分ハイライト（テーマ連動） */
+  .hl-del{background:var(--hl-del-bg);color:var(--hl-del-fg)}
+  .hl-add{background:var(--hl-add-bg);color:var(--hl-add-fg)}
+  .hl-fmt{background:var(--hl-fmt-bg);color:var(--hl-fmt-fg)}
+  /* 改行マーカー ↲ （v1.9 改行位置の自動整列） */
+  .brk{color:var(--mut);opacity:.55;font-size:.9em;padding:0 2px;margin-right:1px}
+  .hl-del.brk{color:var(--hl-del-fg);opacity:1}
+  .hl-add.brk{color:var(--hl-add-fg);opacity:1}
+  .hl-fmt.brk{color:var(--hl-fmt-fg);opacity:1}
+
+  #wl{flex:1;overflow:auto;padding:20px 0 32px;min-height:0;background:var(--bg)}
+  #nav{display:none;padding:5px 16px;background:var(--sur);
+    border-bottom:1px solid var(--bor);flex-shrink:0;
+    align-items:center;gap:8px}
+  .nv{background:transparent;color:var(--mut);border:1px solid var(--bor);
+    padding:4px 12px;border-radius:5px;font-size:12px;font-family:var(--fm);
+    cursor:pointer;transition:all .15s}
+  .nv:hover:not(:disabled){color:var(--acc);border-color:var(--acc)}
+  .nv:disabled{opacity:.3;cursor:default}
+  #nc{font-size:12px;font-family:var(--fm);color:var(--acc);
+    min-width:48px;text-align:center}
+
+  #wl{flex:1;overflow:auto;padding:20px 28px 32px;background:var(--bg);
+    display:flex;gap:40px;flex-wrap:wrap;min-height:0;
+    overflow-anchor:none;-webkit-overflow-scrolling:touch}
+  .wl-desc{flex:1;min-width:260px}
+  .wl-news{flex:1;min-width:260px}
+  .wl-desc-title,.wl-news-title{font-size:10px;color:var(--mut);font-family:var(--fm);
+    text-transform:uppercase;letter-spacing:.1em;margin-bottom:8px}
+  .wl-desc ul{list-style:none;display:flex;flex-direction:column;gap:5px}
+  .wl-desc li{font-size:12px;color:var(--txt);opacity:.72;line-height:1.6;
+    padding-left:14px;position:relative}
+  .wl-desc li::before{content:'—';position:absolute;left:0;
+    color:var(--acc);opacity:.5;font-family:var(--fm)}
+  .wl-desc a{color:var(--acc);text-decoration:none}
+  .wl-desc a:hover{text-decoration:underline}
+  .wl-list{list-style:none;display:flex;flex-direction:column;gap:4px}
+  .wl-list li{display:flex;align-items:baseline;gap:10px;font-size:11.5px;line-height:1.6}
+  .wl-date{font-family:var(--fm);color:var(--mut);font-size:10px;
+    min-width:76px;flex-shrink:0}
+  .wl-msg{color:var(--txt);opacity:.65}
+  .wl-msg a{color:var(--acc);text-decoration:none}
+  .wl-msg a:hover{text-decoration:underline}
+  .wl-footer{margin-top:16px;font-size:11px;color:var(--mut);
+    font-family:var(--fm);border-top:1px solid var(--bor);padding-top:10px;
+    line-height:1.8;width:100%;padding-bottom:env(safe-area-inset-bottom,16px)}
+  .wl-footer a{color:var(--acc);text-decoration:none}
+  .wl-footer a:hover{text-decoration:underline}
+</style>
+</head>
+<body>
+
+<header>
+  <h1>リッチテキスト比較ツール rifff《ﾘｭﾌﾌ》</h1>
+  <span class="badge bd-v">v1.12</span>
+  <span class="badge bd-o">書式対応</span>
+  <span class="badge bd-g">● ローカル処理 / データ送信なし</span>
+</header>
+
+<div id="inp">
+  <div class="ia" id="ia" style="height: 600px;">
+    <div class="ip">
+      <div class="ph">
+        <span class="pl">A — 変更前</span>
+        <div class="tb">
+          <button data-cmd="bold" title="太字 Ctrl+B"><b>B</b></button>
+          <button data-cmd="italic" title="斜体 Ctrl+I"><i>I</i></button>
+          <button data-cmd="underline" title="下線 Ctrl+U"><u>U</u></button>
+          <button data-cmd="superscript" title="上付き"><sup>x²</sup></button>
+          <button data-cmd="subscript" title="下付き"><sub>x₂</sub></button>
+        </div>
+        <span class="cc" id="ccA">641文字</span>
+      </div>
+      <div class="cw">
+        <div class="ce" contenteditable="true" id="eA" spellcheck="false"></div>
+        <div class="hint" id="hA" style="display: none;">比較したいテキストを貼り付けてください
+          <small>Wordなどからコピー&amp;ペーストで書式も保持されます<br>Ctrl+B / Ctrl+I / Ctrl+U で手動適用も可</small>
+        </div>
+      </div>
+    </div>
+    <div class="ip">
+      <div class="ph">
+        <span class="pl">B — 変更後</span>
+        <div class="tb">
+          <button data-cmd="bold" title="太字 Ctrl+B"><b>B</b></button>
+          <button data-cmd="italic" title="斜体 Ctrl+I"><i>I</i></button>
+          <button data-cmd="underline" title="下線 Ctrl+U"><u>U</u></button>
+          <button data-cmd="superscript" title="上付き"><sup>x²</sup></button>
+          <button data-cmd="subscript" title="下付き"><sub>x₂</sub></button>
+        </div>
+        <span class="cc" id="ccB">724文字</span>
+      </div>
+      <div class="cw">
+        <div class="ce" contenteditable="true" id="eB" spellcheck="false"></div>
+        <div class="hint" id="hB" style="display: none;">比較したいテキストを貼り付けてください
+          <small>Wordなどからコピー&amp;ペーストで書式も保持されます<br>Ctrl+B / Ctrl+I / Ctrl+U で手動適用も可</small>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div id="rh" title="ドラッグして高さを変更"></div>
+</div>
+
+<div class="ctrl">
+  <button id="cmp">比較する</button>
+  <button id="clr">クリア</button>
+  <div id="menu-wrap">
+    <button id="menu-btn" title="メニュー">…</button>
+    <div id="menu-drop">
+      <div class="menu-section">
+        <div class="menu-label">テーマ</div>
+        <button class="menu-item" id="theme-dark"><span class="mi-icon">🌙</span>ダーク</button>
+        <button class="menu-item" id="theme-light"><span class="mi-icon">☀️</span>ライト</button>
+      </div>
+      <div class="menu-section" id="sav-section" style="display:none">
+        <button class="menu-item" id="sav"><span class="mi-icon">💾</span>HTMLで保存</button>
+      </div>
+    </div>
+  </div>
+  <div class="sg">
+    <span class="sl">高さ：</span>
+    <button class="sb" onclick="setH(120)">S</button>
+    <button class="sb" onclick="setH(260)">M</button>
+    <button class="sb" onclick="setH(420)">L</button>
+    <button class="sb" onclick="setH(600)">XL</button>
+  </div>
+  <div class="leg">
+    <div class="li"><div class="ld" style="background:var(--del-br)"></div>削除</div>
+    <div class="li"><div class="ld" style="background:var(--add-br)"></div>追加</div>
+    <div class="li"><div class="ld" style="background:var(--fmt-br)"></div>書式変更</div>
+  </div>
+</div>
+
+<div id="stb">
+  変更行：<span id="sc" style="color:var(--del-br)"></span>　
+  削除行：<span id="sd" style="color:var(--del-br)"></span>　
+  追加行：<span id="sa" style="color:var(--add-br)"></span>　
+  書式変更行：<span id="sf" style="color:var(--fmt-fg)"></span>
+  <span style="margin-left:auto">A: <span id="sac"></span>文字 ／ B: <span id="sbc"></span>文字</span>
+</div>
+<div id="nd">✓ 差分はありません（テキスト・書式ともに同一です）</div>
+<div id="nav">
+  <button class="nv" id="np">▲ 前の差分</button>
+  <button class="nv" id="nn">▼ 次の差分</button>
+  <span id="nc"></span>
+</div>
+<div id="ra">
+  <div class="rg">
+    <div class="rc" id="cL"><div class="ch">A — 変更前</div></div>
+    <div class="rc" id="cR"><div class="ch">B — 変更後</div></div>
+  </div>
+  <div id="pf">
+    <a href="https://tools.nakaix.com/rifff/" target="_blank">https://tools.nakaix.com/rifff/</a> | <a href="https://github.com/TadashiNakai/rifff" target="_blank">GitHub</a><br>
+    Concept &amp; Design: <a href="https://x.com/TadashiNakai" target="_blank">@TadashiNakai</a> | Implementation: Claude (Anthropic)
+  </div>
+</div>
+
+<div id="wl">
+  <div class="wl-desc">
+    <p class="wl-desc-title">ツールの説明：</p>
+    <ul>
+      <li>リッチテキスト（書式付きテキスト）の差分を比較できるツールです</li>
+      <li>太字・斜体・下線・上付き・下付きの書式変化も検出・表示します</li>
+      <li>完全ローカル処理 — テキストはサーバーに送信されません</li>
+      <li>Word や Google Docs からコピー&amp;ペーストで書式を保持したまま入力できます</li>
+      <li><a href="https://difff.jp/" target="_blank">difff《デュフフ》</a>に着想を得たリッチテキスト対応の比較ツールです</li>
+    </ul>
+    <p class="wl-desc-title" style="margin-top:14px">基本の使い方：</p>
+    <ul>
+      <li>① 左エディタ（A）に変更前、右エディタ（B）に変更後のテキストを貼り付ける</li>
+      <li>② <strong>比較する</strong>ボタン（または Ctrl+Enter）を押す</li>
+      <li>③ 差分が色分けで表示される — <span style="color:var(--del-br)">●削除</span>・<span style="color:var(--add-br)">●追加</span>・<span style="color:var(--fmt-br)">●書式変更</span></li>
+      <li>④ <strong>▼次の差分</strong> / <strong>▲前の差分</strong> で差分箇所をジャンプ</li>
+      <li>⑤ <strong>… メニュー → HTMLで保存</strong> で差分結果をファイルに書き出し</li>
+    </ul>
+    <p class="wl-desc-title" style="margin-top:14px">詳しい機能：</p>
+    <ul>
+      <li><strong>インライン差分</strong> — 変更行の中で「どの文字が」変わったかを文字単位で強調</li>
+      <li><strong>改行位置の自動整列</strong>（v1.9）— 一方のテキストに余分な改行がある場合、自動で行を連結して差分を取り直す。結合箇所は <span class="brk">↲</span> で視覚化</li>
+      <li><strong>書式差分の検出</strong> — 文字列が同じでも太字・斜体・下線などが変わった行を「書式変更」として識別</li>
+      <li><strong>行高さ自動同期</strong> — 折り返しが生じても左右の対応行の高さを揃えて表示</li>
+      <li><strong>入力エリアのスクロール同期</strong> — 比較後、左右エディタのスクロールが行対応で連動</li>
+      <li><strong>エディタ内の書式操作</strong> — Ctrl+B / Ctrl+I / Ctrl+U、またはツールバーボタンで書式を手動適用</li>
+      <li><strong>Word貼り付け対応</strong> — Word / Google Docs からのコピーで書式・スペースを正確に取り込む</li>
+      <li><strong>高さ調整</strong> — リサイズハンドルまたは S / M / L / XL ボタンでエディタ高さを変更</li>
+      <li><strong>ダーク / ライトテーマ</strong> — … メニューで切り替え。選択はブラウザに記憶</li>
+      <li><strong>HTML保存</strong> — 差分結果をスタンドアロン HTML ファイルとして書き出し。横幅変更後も崩れないテーブル構造</li>
+      <li><strong>統計表示</strong> — 変更行・削除行・追加行・書式変更行の件数を比較実行後に表示</li>
+    </ul>
+  </div>
+  <div class="wl-news">
+    <p class="wl-news-title">新着情報：</p>
+    <ul class="wl-list">
+      <li><span class="wl-date">2026-06-07</span><span class="wl-msg"><a href="https://tools.nakaix.com/rifff/rifff-1.12.html" target="_blank">ver.1.12</a> — 行内（インライン）差分エンジンを GNU diff -d（Myers 法 + 変更境界の整列）に置換。改行のない長い行でも差分が縮退せず、変更箇所の境界がより自然に。改行位置の自動整列（前処理）も同エンジンを用い、より大きな領域まで整列できるように。<a href="https://tools.nakaix.com/difff-js/" target="_blank">difff-js</a> と同一アルゴリズムを共有</span></li>
+      <li><span class="wl-date">2026-05-02</span><span class="wl-msg"><a href="https://tools.nakaix.com/rifff/rifff-1.11.html" target="_blank">ver.1.11</a> — 内部リファクタリング：差分結果のレンダリングを DOM API ベースに変更（XSS 耐性向上）。対応行のない箇所を斜めストライプで明示。LCS の大入力時メモリ確保にガードを追加</span></li>
+      <li><span class="wl-date">2026-04-25</span><span class="wl-msg"><a href="https://tools.nakaix.com/rifff/rifff-1.10.html" target="_blank">ver.1.10</a> — 空行が差分表示で無視される不具合を修正。追加・削除された空行を色帯として表示するように</span></li>
+      <li><span class="wl-date">2026-04-21</span><span class="wl-msg"><a href="https://tools.nakaix.com/rifff/rifff-1.9.html" target="_blank">ver.1.9</a> — 改行位置のずれを自動整列する前処理を追加。80文字折り返しなど機械的改行を含むテキストでも差分を正確に検出できるように</span></li>
+      <li><span class="wl-date">2026-04-12</span><span class="wl-msg"><a href="https://tools.nakaix.com/rifff/rifff-1.8.html" target="_blank">ver.1.8</a> — ペースト時のサニタイズ強化、巨大入力に対する保護を追加</span></li>
+      <li><span class="wl-date">2026-04-02</span><span class="wl-msg"><a href="https://tools.nakaix.com/rifff/rifff-1.7.html" target="_blank">ver.1.7</a> — アイコンを読み込むようにした</span></li>
+      <li><span class="wl-date">2026-03-28</span><span class="wl-msg"><a href="https://tools.nakaix.com/rifff/rifff-1.6.html" target="_blank">ver.1.6</a> — 比較結果をスタンドアロン HTML ファイルとして保存する機能を追加（… メニュー → HTMLで保存）。ダーク／ライトテーマ切り替え機能を追加</span></li>
+      <li><span class="wl-date">2026-03-23</span><span class="wl-msg"><a href="https://tools.nakaix.com/rifff/rifff-1.5.html" target="_blank">ver.1.5</a> — 比較実行後、入力エディタ左右のスクロール位置を行対応に基づき同期</span></li>
+      <li><span class="wl-date">2026-03-22</span><span class="wl-msg"><a href="https://tools.nakaix.com/rifff/rifff-1.4.html" target="_blank">ver.1.4</a> — 外部フォント読み込み（Google Fonts）を削除し完全ローカル動作に</span></li>
+      <li><span class="wl-date">2026-03-22</span><span class="wl-msg"><a href="https://tools.nakaix.com/rifff/rifff-1.3.html" target="_blank">ver.1.3</a> — テキストエディタからの貼り付け時に改行が二重になる不具合を修正（CRLF改行コードの処理）</span></li>
+      <li><span class="wl-date">2026-03-22</span><span class="wl-msg"><a href="https://tools.nakaix.com/rifff/rifff-1.2.html" target="_blank">ver.1.2</a> — 差分箇所へのジャンプ機能を追加（▲前の差分 / ▼次の差分、現在位置表示）</span></li>
+      <li><span class="wl-date">2026-03-22</span><span class="wl-msg"><a href="https://tools.nakaix.com/rifff/rifff-1.1.html" target="_blank">ver.1.1</a> — 初期画面に新着情報を表示（<a href="https://difff.jp/" target="_blank">difff《デュフフ》</a>スタイル）。フッターにクレジット表記を追加</span></li>
+      <li><span class="wl-date">2026-03-21</span><span class="wl-msg"><a href="https://tools.nakaix.com/rifff/rifff-1.0.html" target="_blank">ver.1.0</a> 公開 — リッチテキスト（太字・斜体・下線・上付き・下付き）の書式差分に対応したテキスト比較ツール</span></li>
+    </ul>
+  </div>
+  <p class="wl-footer">
+    <a href="https://tools.nakaix.com/rifff/" target="_blank">https://tools.nakaix.com/rifff/</a> | <a href="https://github.com/TadashiNakai/rifff" target="_blank">GitHub</a><br>
+    Concept &amp; Design: <a href="https://x.com/TadashiNakai" target="_blank">@TadashiNakai</a> | Implementation: Claude (Anthropic)
+  </p>
+</div>
+
+<script>
+/*
+ * rifff
+ *
+ * This software includes a JavaScript port of the diff algorithm from GNU diffutils.
+ * Copyright (C) 1988-1989, 1992-1995, 1998, 2001-2002, 2004, 2006-2007, 2009-2013,
+ * 2015-2025 Free Software Foundation, Inc.
+ * This program is free software: you can redistribute it and/or modify it
+ * under the terms of the GNU General Public License as published by the
+ * Free Software Foundation, either version 3 of the License, or (at your option)
+ * any later version.
+ *
+ * -------------------------------------------------------------------------
+ * The rest of this software is licensed under the MIT License:
+ *
+ * Copyright (c) 2026 Tadashi Nakai
+ *
+ * Permission is hereby granted, free of charge, to any person obtaining a copy
+ * of this software and associated documentation files (the "Software"), to deal
+ * in the Software without restriction, including without limitation the rights
+ * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+ * copies of the Software, and to permit persons to whom the Software is
+ * furnished to do so, subject to the following conditions:
+ *
+ * The above copyright notice and this permission notice shall be included in all
+ * copies or substantial portions of the Software.
+ *
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+ * SOFTWARE.
+ */
+
+// ═══════════════════════════════════════════════════════════════
+// 1. RESIZE
+// ═══════════════════════════════════════════════════════════════
+const iaEl = document.getElementById('ia');
+const rhEl = document.getElementById('rh');
+
+function setH(px) {
+  const h = Math.min(Math.max(px, 80), window.innerHeight * 0.8);
+  iaEl.style.height = h + 'px';
+  try { localStorage.setItem('dh', h); } catch(e) {}
+}
+try { setH(+localStorage.getItem('dh') || 260); } catch(e) { setH(260); }
+
+let ry = null, rh0 = 0;
+rhEl.addEventListener('mousedown', e => {
+  ry = e.clientY; rh0 = iaEl.getBoundingClientRect().height;
+  rhEl.classList.add('d');
+  document.body.style.cssText = 'cursor:ns-resize;user-select:none';
+  e.preventDefault();
+});
+document.addEventListener('mousemove', e => { if (ry !== null) setH(rh0 + e.clientY - ry); });
+document.addEventListener('mouseup', () => {
+  if (ry === null) return;
+  ry = null; rhEl.classList.remove('d'); document.body.style.cssText = '';
+});
+rhEl.addEventListener('touchstart', e => {
+  ry = e.touches[0].clientY; rh0 = iaEl.getBoundingClientRect().height;
+  rhEl.classList.add('d'); e.preventDefault();
+}, { passive: false });
+document.addEventListener('touchmove', e => {
+  if (ry !== null) setH(rh0 + e.touches[0].clientY - ry);
+}, { passive: false });
+document.addEventListener('touchend', () => { ry = null; rhEl.classList.remove('d'); });
+
+// ═══════════════════════════════════════════════════════════════
+// 2. EDITOR SETUP
+// ═══════════════════════════════════════════════════════════════
+const eA  = document.getElementById('eA'),  eB  = document.getElementById('eB');
+const hA  = document.getElementById('hA'),  hB  = document.getElementById('hB');
+const ccA = document.getElementById('ccA'), ccB = document.getElementById('ccB');
+let activeEd = eA;
+
+[[eA, hA, ccA], [eB, hB, ccB]].forEach(([ed, hn, cc]) => {
+  ed.addEventListener('focus', () => activeEd = ed);
+  ed.addEventListener('input', () => {
+    hn.style.display = ed.textContent.length ? 'none' : '';
+    cc.textContent = ed.textContent.length.toLocaleString() + '文字';
+  });
+  ed.addEventListener('paste', handlePaste);
+  ed.addEventListener('copy', handleCopyCut);
+  ed.addEventListener('cut',  handleCopyCut);
+});
+
+document.querySelectorAll('.tb button').forEach(btn => {
+  btn.addEventListener('mousedown', e => {
+    e.preventDefault();
+    activeEd.focus();
+    document.execCommand(btn.dataset.cmd);
+  });
+});
+
+// ═══════════════════════════════════════════════════════════════
+// 3a. COPY / CUT HANDLER
+// ═══════════════════════════════════════════════════════════════
+function handleCopyCut(e) {
+  const ed = e.currentTarget;
+  const sel = window.getSelection();
+  if (!sel.rangeCount) return;
+
+  const range = sel.getRangeAt(0);
+  const frag  = range.cloneContents();
+
+  const tmpDiv = document.createElement('div');
+  tmpDiv.appendChild(frag);
+  tmpDiv.style.cssText = 'position:absolute;visibility:hidden;white-space:pre-wrap';
+  document.body.appendChild(tmpDiv);
+  const lines = extractLines(tmpDiv);
+  document.body.removeChild(tmpDiv);
+
+  const plain = lines.map(l => l.map(t => t.ch).join('')).join('\n');
+  const html = lines.map(tokensToCleanHTML).join('<br>');
+
+  e.clipboardData.setData('text/plain', plain);
+  e.clipboardData.setData('text/html', html);
+  e.preventDefault();
+
+  if (e.type === 'cut') {
+    document.execCommand('delete');
+  }
+}
+
+// ═══════════════════════════════════════════════════════════════
+// 3b. PASTE SANITIZATION
+// ═══════════════════════════════════════════════════════════════
+function handlePaste(e) {
+  e.preventDefault();
+  const html  = e.clipboardData.getData('text/html');
+  const plain = e.clipboardData.getData('text/plain');
+  const ed = e.currentTarget;
+
+  if (!html) {
+    const escaped = plain
+      .replace(/\r\n/g, '\n').replace(/\r/g, '\n')
+      .replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')
+      .replace(/\n/g, '<br>');
+    document.execCommand('insertHTML', false, escaped);
+    ed.dispatchEvent(new Event('input'));
+    return;
+  }
+
+  // ── DOMParser で不活性な DOM に変換（イベントハンドラ発火を防止）（ver.1.8）──
+  const parsed = new DOMParser().parseFromString(html, 'text/html');
+  sanitizeNode(parsed.body);                       // 不活性 DOM 内でサニタイズ
+  const tmpDiv = document.createElement('div');
+  while (parsed.body.firstChild) tmpDiv.appendChild(document.adoptNode(parsed.body.firstChild));
+
+  tmpDiv.style.cssText = 'position:absolute;visibility:hidden;white-space:pre-wrap';
+  document.body.appendChild(tmpDiv);
+  const pastedLines = extractLines(tmpDiv, true);
+  document.body.removeChild(tmpDiv);
+
+  const isBlank = line => line.length === 0;
+  const cleaned = [];
+  let blankRun = 0;
+  for (const line of pastedLines) {
+    if (isBlank(line)) { blankRun++; if (blankRun <= 1) cleaned.push(line); }
+    else { blankRun = 0; cleaned.push(line); }
+  }
+  while (cleaned.length && isBlank(cleaned[0]))                cleaned.shift();
+  while (cleaned.length && isBlank(cleaned[cleaned.length-1])) cleaned.pop();
+
+  if (cleaned.length === 0) return;
+
+  const newHTML = cleaned.map(tokensToCleanHTML).join('<br>');
+
+  if (ed.textContent.trim() === '') {
+    ed.innerHTML = newHTML;
+  } else {
+    document.execCommand('insertHTML', false, newHTML);
+  }
+
+  try {
+    const sel = window.getSelection(), range = document.createRange();
+    range.selectNodeContents(ed); range.collapse(false);
+    sel.removeAllRanges(); sel.addRange(range);
+  } catch(e2) {}
+
+  ed.dispatchEvent(new Event('input'));
+}
+
+function tokensToCleanHTML(toks) {
+  const ESC2 = s => s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+  let html = '', bat = null;
+  const flush = () => {
+    if (!bat) return;
+    let s = ESC2(bat.t);
+    s = s.replace(/ (?= )/g, '&nbsp;');
+    if (bat.u)   s = '<u>'   + s + '</u>';
+    if (bat.i)   s = '<i>'   + s + '</i>';
+    if (bat.b)   s = '<b>'   + s + '</b>';
+    if (bat.sup) s = '<sup>' + s + '</sup>';
+    if (bat.sub) s = '<sub>' + s + '</sub>';
+    html += s; bat = null;
+  };
+
+  let lastNonSpace = -1;
+  for (let i = toks.length - 1; i >= 0; i--) {
+    if (toks[i].ch !== ' ') { lastNonSpace = i; break; }
+  }
+
+  let leadDone = false;
+  for (let i = 0; i < toks.length; i++) {
+    const tok = toks[i];
+    let ch = tok.ch;
+    if (!leadDone) {
+      if (ch === ' ') { flush(); html += '&nbsp;'; continue; }
+      else leadDone = true;
+    }
+    if (i > lastNonSpace && ch === ' ') {
+      flush(); html += '&nbsp;'; continue;
+    }
+    const k = (tok.bold?'b':'')+(tok.italic?'i':'')+(tok.underline?'u':'')+(tok.sup?'^':'')+(tok.sub?'v':'');
+    if (bat && bat.k === k) bat.t += ch;
+    else { flush(); bat = { k, b:tok.bold, i:tok.italic, u:tok.underline, sup:tok.sup, sub:tok.sub, t:ch }; }
+  }
+  flush();
+  return html;
+}
+
+// ═══════════════════════════════════════════════════════════════
+// 3c. SANITIZE NODE
+// ═══════════════════════════════════════════════════════════════
+function sanitizeNode(node) {
+  const BLOCK_TAGS = ['div','p','h1','h2','h3','h4','h5','h6','li','blockquote','pre',
+                      'ul','ol','table','tr','td','th','thead','tbody','section','article',
+                      'header','footer','nav','main'];
+  const KEEP_TAGS  = ['b','strong','i','em','u','sup','sub','br','div','p','span'];
+
+  [...node.childNodes].forEach(c => {
+    if (c.nodeType === Node.TEXT_NODE) {
+      if (c.textContent.replace(/[\u00a0\s]/g,'') === '') {
+        const parent = c.parentNode;
+        if (parent) {
+          const parentTag = (parent.tagName || '').toLowerCase();
+          if (BLOCK_TAGS.includes(parentTag)) {
+            const hasSibling = [...parent.childNodes].some(
+              n => n !== c && (
+                (n.nodeType === Node.ELEMENT_NODE && (n.tagName || '').toLowerCase() !== 'br') ||
+                (n.nodeType === Node.TEXT_NODE && n.textContent.replace(/[\u00a0\s]/g,'').length > 0)
+              )
+            );
+            if (!hasSibling) c.textContent = '';
+          }
+        }
+      }
+      return;
+    }
+    if (c.nodeType !== Node.ELEMENT_NODE) { c.remove(); return; }
+
+    const tag = c.tagName.toLowerCase();
+    if (tag.includes(':')) { c.remove(); return; }
+    if (['style','script','meta','link','head','xml','title','colgroup','col'].includes(tag)) {
+      c.remove(); return;
+    }
+
+    if (tag === 'span') {
+      const rawStyle = c.getAttribute('style') || '';
+      if (rawStyle.includes('mso-spacerun')) {
+        c.remove(); return;
+      }
+    }
+
+    const bold   = ['b','strong'].includes(tag)
+                   || /^(bold|[6-9]\d{2}|1000)$/i.test(c.style?.fontWeight || '');
+    const italic = ['i','em'].includes(tag)
+                   || ['italic','oblique'].includes(c.style?.fontStyle || '');
+    const under  = tag === 'u'
+                   || (c.style?.textDecoration || '').includes('underline')
+                   || (c.style?.textDecorationLine || '').includes('underline');
+    const _va   = (c.style?.verticalAlign || '').toLowerCase();
+    const sup    = tag === 'sup' || _va === 'super' || _va === 'text-top' || _va.includes('super');
+    const sub    = tag === 'sub' || _va === 'sub'   || _va === 'text-bottom' || _va.includes('sub');
+
+    sanitizeNode(c);
+
+    if (BLOCK_TAGS.includes(tag)) {
+      const hasContent = c.textContent.replace(/[\u00a0\s]/g,'').length > 0
+                      || c.querySelector('br');
+      if (!hasContent) { c.remove(); return; }
+    }
+
+    if (!KEEP_TAGS.includes(tag)) {
+      if (bold || italic || under || sup || sub) {
+        let wrapper;
+        if (sup)      wrapper = document.createElement('sup');
+        else if (sub) wrapper = document.createElement('sub');
+        else          wrapper = document.createElement('span');
+        if (bold)   wrapper.style.fontWeight      = 'bold';
+        if (italic) wrapper.style.fontStyle       = 'italic';
+        if (under)  wrapper.style.textDecoration  = 'underline';
+        while (c.firstChild) wrapper.appendChild(c.firstChild);
+        c.parentNode.replaceChild(wrapper, c);
+      } else {
+        while (c.firstChild) c.parentNode.insertBefore(c.firstChild, c);
+        c.remove();
+      }
+    } else {
+      [...c.attributes].forEach(a => c.removeAttribute(a.name));
+      if (bold   && !['b','strong'].includes(tag)) c.style.fontWeight      = 'bold';
+      if (italic && !['i','em'].includes(tag))     c.style.fontStyle       = 'italic';
+      if (under  && tag !== 'u')                   c.style.textDecoration  = 'underline';
+      if (sup && tag !== 'sup') c.style.verticalAlign = 'super';
+      if (sub && tag !== 'sub') c.style.verticalAlign = 'sub';
+      if (tag === 'span' && !c.getAttribute('style')) {
+        while (c.firstChild) c.parentNode.insertBefore(c.firstChild, c);
+        c.remove();
+      }
+    }
+  });
+}
+
+// ═══════════════════════════════════════════════════════════════
+// 4. DOM → FORMATTED TOKEN EXTRACTION
+// ═══════════════════════════════════════════════════════════════
+const BASE_FMT = { bold: false, italic: false, underline: false, sup: false, sub: false };
+const BLOCK_EL = new Set(['div','p','h1','h2','h3','h4','h5','h6','li','blockquote','pre',
+                          'ul','ol','table','tr','td','th','section','article','header','footer']);
+
+function getNodeFmt(node, parentFmt) {
+  const f = { ...parentFmt };
+  const tag = (node.tagName || '').toLowerCase();
+  if (['b','strong'].includes(tag)) f.bold = true;
+  if (['i','em'].includes(tag))     f.italic = true;
+  if (tag === 'u')   f.underline = true;
+  if (tag === 'sup') f.sup = true;
+  if (tag === 'sub') f.sub = true;
+  if (node.style) {
+    const fw = node.style.fontWeight;
+    if (fw === 'bold' || (parseInt(fw, 10) >= 600)) f.bold = true;
+    const fs = node.style.fontStyle;
+    if (fs === 'italic' || fs === 'oblique') f.italic = true;
+    if ((node.style.textDecoration || '').includes('underline')) f.underline = true;
+    if ((node.style.textDecorationLine || '').includes('underline')) f.underline = true;
+    const va = (node.style.verticalAlign || '').toLowerCase();
+    if (va === 'super' || va.includes('super')) f.sup = true;
+    if (va === 'sub' || va.includes('sub'))     f.sub = true;
+  }
+  return f;
+}
+
+const RE_WS_ONLY = /^[\r\n\t \u00a0]*$/;
+
+function extractLines(el, pasteMode, preserveLineWS) {
+  const chars = [];
+  let atBlockStart = true;
+
+  // force=true のときは直前が \n でも \n を追加できる（v1.10 空行保持）
+  const pushNL = (force = false) => {
+    if (chars.length === 0) return;
+    if (!force && chars[chars.length - 1].ch === '\n') return;
+    chars.push({ ch: '\n', ...BASE_FMT });
+  };
+
+  function walk(node, fmt) {
+    if (node.nodeType === Node.TEXT_NODE) {
+      const parent = node.parentNode;
+      if ((parent === el || (parent && BLOCK_EL.has((parent.tagName || '').toLowerCase()))) &&
+          RE_WS_ONLY.test(node.textContent)) {
+        return;
+      }
+
+      for (let ch of node.textContent) {
+        if (ch === '\r') continue;
+        if (ch === '\n' || ch === '\t') ch = ' ';
+        // 行頭空白スキップ：preserveLineWS=true のときは行頭空白を保持する
+        if (!preserveLineWS &&
+            (ch === ' ' || ch === '\u00a0') && atBlockStart) continue;
+        if (pasteMode && ch === ' ' && chars.length > 0) {
+          const prev = chars[chars.length - 1].ch;
+          if (prev === ' ') continue;
+        }
+        if (ch !== ' ') atBlockStart = false;
+        chars.push({ ch, ...fmt });
+      }
+      return;
+    }
+    if (node.nodeType !== Node.ELEMENT_NODE) return;
+
+    const tag = node.tagName.toLowerCase();
+    const newFmt = node === el ? { ...BASE_FMT } : getNodeFmt(node, fmt);
+
+    if (tag === 'br') {
+      pushNL(true);
+      atBlockStart = false;
+      return;
+    }
+
+    const isBlock = BLOCK_EL.has(tag);
+    if (isBlock && node !== el) {
+      pushNL();
+      atBlockStart = true;
+    }
+    const startLen = chars.length;
+    for (const child of node.childNodes) walk(child, newFmt);
+    if (isBlock && node !== el) {
+      // 中身が空のブロックは空行として保持（v1.10）
+      pushNL(chars.length === startLen);
+      atBlockStart = true;
+    }
+  }
+
+  walk(el, { ...BASE_FMT });
+
+  while (chars.length && chars[chars.length - 1].ch === '\n') chars.pop();
+  while (chars.length && chars[0].ch === '\n') chars.shift();
+
+  const lines = [];
+  let cur = [];
+  for (const t of chars) {
+    if (t.ch === '\n') { lines.push(cur); cur = []; }
+    else cur.push(t);
+  }
+  lines.push(cur);
+
+  if (pasteMode && !preserveLineWS) {
+    for (const line of lines) {
+      while (line.length > 0 && line[line.length - 1].ch === ' ') line.pop();
+    }
+    for (const line of lines) {
+      while (line.length > 0 && line[0].ch === ' ') line.shift();
+    }
+  }
+
+  for (const line of lines) {
+    for (const tok of line) {
+      if (tok.ch === '\u00a0') tok.ch = ' ';
+    }
+  }
+
+  return lines;
+}
+
+// ═══════════════════════════════════════════════════════════════
+// 5. LCS ENGINE
+// ═══════════════════════════════════════════════════════════════
+// dp 配列のセル数上限（Int32Array なので 1 セル = 4 bytes）
+// 10M セル = 約 40 MB のメモリ確保を想定。これを超えるとフォールバック
+const LCS_DP_CELL_CAP = 10_000_000;
+
+function lcs(a, b) {
+  const m = a.length, n = b.length;
+  if (m === 0 && n === 0) return [];
+  if (m === 0) return b.map((_, j) => ({ op:'ins', iB:j }));
+  if (n === 0) return a.map((_, i) => ({ op:'del', iA:i }));
+
+  let prefix = 0;
+  while (prefix < m && prefix < n && a[prefix] === b[prefix]) prefix++;
+  let suffix = 0;
+  while (suffix < (m - prefix) && suffix < (n - prefix) &&
+         a[m - 1 - suffix] === b[n - 1 - suffix]) suffix++;
+
+  const ops = [];
+  for (let i = 0; i < prefix; i++) ops.push({ op:'eq', iA:i, iB:i });
+
+  const subA = a.slice(prefix, m - suffix);
+  const subB = b.slice(prefix, n - suffix);
+  const sm = subA.length, sn = subB.length;
+
+  if (sm === 0) {
+    for (let j = 0; j < sn; j++) ops.push({ op:'ins', iB: prefix + j });
+  } else if (sn === 0) {
+    for (let i = 0; i < sm; i++) ops.push({ op:'del', iA: prefix + i });
+  } else if ((sm + 1) * (sn + 1) > LCS_DP_CELL_CAP) {
+    // dp 配列がメモリ上限を超える場合はフォールバック：
+    // 共通部分列を諦め、全 del + 全 ins として返す
+    // （差分の品質は下がるがブラウザのフリーズより安全）
+    for (let i = 0; i < sm; i++) ops.push({ op:'del', iA: prefix + i });
+    for (let j = 0; j < sn; j++) ops.push({ op:'ins', iB: prefix + j });
+  } else {
+    const dp = [];
+    for (let i = 0; i <= sm; i++) dp.push(new Int32Array(sn + 1));
+    for (let i = 1; i <= sm; i++)
+      for (let j = 1; j <= sn; j++)
+        dp[i][j] = subA[i-1] === subB[j-1]
+          ? dp[i-1][j-1] + 1 : Math.max(dp[i-1][j], dp[i][j-1]);
+
+    const midOps = [];
+    let i = sm, j = sn;
+    while (i > 0 || j > 0) {
+      if (i > 0 && j > 0 && subA[i-1] === subB[j-1]) {
+        midOps.push({ op:'eq', iA: prefix + i - 1, iB: prefix + j - 1 });
+        i--; j--;
+      } else if (j > 0 && (i === 0 || dp[i][j-1] >= dp[i-1][j])) {
+        midOps.push({ op:'ins', iB: prefix + j - 1 });
+        j--;
+      } else {
+        midOps.push({ op:'del', iA: prefix + i - 1 });
+        i--;
+      }
+    }
+    midOps.reverse();
+    for (let k = 0; k < midOps.length; k++) ops.push(midOps[k]);
+  }
+
+  for (let i = 0; i < suffix; i++)
+    ops.push({ op:'eq', iA: m - suffix + i, iB: n - suffix + i });
+
+  return ops;
+}
+
+// ═══════════════════════════════════════════════════════════════
+// 5b. GNU diff -d ENGINE (Myers + shift_boundaries) — v1.12
+// ═══════════════════════════════════════════════════════════════
+// インライン（行内）char 差分に用いる差分エンジン。difff-js と同じ
+// GNU diffutils analyze.c（双方向 Myers + shift_boundaries）の移植版。
+// 従来の O(mn) DP（lcs）は 1 行が長くなるとセルキャップに達して
+// 全 del+全 ins へ縮退したが、Myers は O(ND) でその崖が無く、境界も
+// diff -d 同様に整う。行レベル LCS と前処理は従来どおり lcs() を使う。
+//
+// GNU analyze.c: compareseq / diag（双方向 middle-snake, minimal）
+function gnuMyersChanged(xkeys, ykeys) {
+  const N = xkeys.length, M = ykeys.length;
+  const codeMap = new Map(); let next = 1;
+  const xv = new Int32Array(N), yv = new Int32Array(M);
+  for (let i = 0; i < N; i++) { let c = codeMap.get(xkeys[i]); if (c === undefined) { c = next++; codeMap.set(xkeys[i], c); } xv[i] = c; }
+  for (let i = 0; i < M; i++) { let c = codeMap.get(ykeys[i]); if (c === undefined) { c = next++; codeMap.set(ykeys[i], c); } yv[i] = c; }
+  const changedA = new Array(N).fill(false), changedB = new Array(M).fill(false);
+  const diags = N + M + 3;
+  const fdiag = new Int32Array(2 * diags + 4), bdiag = new Int32Array(2 * diags + 4);
+  const foff = M + 2, boff = M + 2;
+  const FD = (d) => fdiag[foff + d], SFD = (d, v) => { fdiag[foff + d] = v; };
+  const BD = (d) => bdiag[boff + d], SBD = (d, v) => { bdiag[boff + d] = v; };
+  function diag(xoff, xlim, yoff, ylim, part) {
+    const dmin = xoff - ylim, dmax = xlim - yoff;
+    const fmid = xoff - yoff, bmid = xlim - ylim;
+    let fmin = fmid, fmax = fmid, bmin = bmid, bmax = bmid;
+    const odd = ((fmid - bmid) & 1) !== 0;
+    SFD(fmid, xoff); SBD(bmid, xlim);
+    for (let c = 1; ; c++) {
+      if (fmin > dmin) SFD(--fmin - 1, -1); else ++fmin;
+      if (fmax < dmax) SFD(++fmax + 1, -1); else --fmax;
+      for (let d = fmax; d >= fmin; d -= 2) {
+        let tlo = FD(d - 1), thi = FD(d + 1);
+        let x = (tlo >= thi) ? tlo + 1 : thi; let y = x - d;
+        while (x < xlim && y < ylim && xv[x] === yv[y]) { x++; y++; }
+        SFD(d, x);
+        if (odd && bmin <= d && d <= bmax && BD(d) <= x) { part.xmid = x; part.ymid = y; return; }
+      }
+      if (bmin > dmin) SBD(--bmin - 1, 0x7fffffff); else ++bmin;
+      if (bmax < dmax) SBD(++bmax + 1, 0x7fffffff); else --bmax;
+      for (let d = bmax; d >= bmin; d -= 2) {
+        let tlo = BD(d - 1), thi = BD(d + 1);
+        let x = (tlo < thi) ? tlo : thi - 1; let y = x - d;
+        while (x > xoff && y > yoff && xv[x - 1] === yv[y - 1]) { x--; y--; }
+        SBD(d, x);
+        if (!odd && fmin <= d && d <= fmax && x <= FD(d)) { part.xmid = x; part.ymid = y; return; }
+      }
+      // minimal=true のためヒューリスティックは使用しない
+    }
+  }
+  function compareseq(xoff, xlim, yoff, ylim) {
+    while (xoff < xlim && yoff < ylim && xv[xoff] === yv[yoff]) { xoff++; yoff++; }
+    while (xlim > xoff && ylim > yoff && xv[xlim - 1] === yv[ylim - 1]) { xlim--; ylim--; }
+    if (xoff === xlim) { while (yoff < ylim) changedB[yoff++] = true; }
+    else if (yoff === ylim) { while (xoff < xlim) changedA[xoff++] = true; }
+    else {
+      const part = { xmid: 0, ymid: 0 };
+      diag(xoff, xlim, yoff, ylim, part);
+      compareseq(xoff, part.xmid, yoff, part.ymid);
+      compareseq(part.xmid, xlim, part.ymid, ylim);
+    }
+  }
+  compareseq(0, N, 0, M);
+  return { changedA, changedB };
+}
+
+// GNU analyze.c: shift_boundaries（変更領域を末尾方向へ寄せ、隣接ハンクを併合）
+function gnuShiftBoundaries(equivs, changed, otherChanged) {
+  const i_end = equivs.length;
+  const ch = (arr, idx) => (idx < 0 || idx >= arr.length ? false : arr[idx]);
+  let i = 0, j = 0;
+  while (true) {
+    let runlength, start, corresponding;
+    while (i < i_end && !changed[i]) { while (ch(otherChanged, j)) j++; j++; i++; }
+    if (i === i_end) break;
+    start = i; i++;
+    while (ch(changed, i)) i++;
+    while (ch(otherChanged, j)) j++;
+    do {
+      runlength = i - start;
+      while (start > 0 && equivs[start - 1] === equivs[i - 1]) {
+        changed[--start] = true; changed[--i] = false;
+        while (ch(changed, start - 1)) start--;
+        j--; while (ch(otherChanged, j)) j--;
+      }
+      corresponding = ch(otherChanged, j - 1) ? i : i_end;
+      while (i !== i_end && equivs[start] === equivs[i]) {
+        changed[start++] = false; changed[i++] = true;
+        while (ch(changed, i)) i++;
+        j++; while (ch(otherChanged, j)) { corresponding = i; j++; }
+      }
+    } while (runlength !== i - start);
+    while (corresponding < i) { changed[--start] = true; changed[--i] = false; j--; while (ch(otherChanged, j)) j--; }
+  }
+}
+
+// char 配列 a, b を diff -d で比較し、inlineDiff が消費する
+// {op,iA,iB} の順序付き配列（従来の lcs() と同形式）を返す。
+function inlineDiffOps(a, b) {
+  const N = a.length, M = b.length;
+  const { changedA, changedB } = gnuMyersChanged(a, b);
+  // 変更境界を整列（f=0, f=1 の順、equivs として元の char 配列を使用）
+  gnuShiftBoundaries(a, changedA, changedB);
+  gnuShiftBoundaries(b, changedB, changedA);
+  const chA = (k) => (k >= 0 && k < N ? changedA[k] : false);
+  const chB = (k) => (k >= 0 && k < M ? changedB[k] : false);
+  const ops = [];
+  let i = 0, j = 0;
+  while (i < N || j < M) {
+    if (chA(i) || chB(j)) {
+      while (chA(i)) { ops.push({ op:'del', iA:i }); i++; }
+      while (chB(j)) { ops.push({ op:'ins', iB:j }); j++; }
+    }
+    if (i < N && j < M) ops.push({ op:'eq', iA:i, iB:j });
+    i++; j++;
+  }
+  return ops;
+}
+
+// ═══════════════════════════════════════════════════════════════
+// 6. INLINE DIFF WITH FORMAT AWARENESS
+// ═══════════════════════════════════════════════════════════════
+// ↲（brk マーカー）は他の文字と同様に扱う（v1.9）。
+// スペースと同一視すると後続スペースとの対応が崩れるため、
+// ↲ は del/ins として赤/緑でハイライトする。
+function inlineDiff(tokA, tokB) {
+  const chA = tokA.map(t => t.ch);
+  const chB = tokB.map(t => t.ch);
+  const ops = inlineDiffOps(chA, chB);  // v1.12: GNU diff -d（Myers + shift_boundaries）
+  return ops.map(({ op, iA, iB }) => {
+    if (op === 'eq') {
+      const a = tokA[iA], b = tokB[iB];
+      const same = a.bold === b.bold && a.italic === b.italic &&
+                   a.underline === b.underline && a.sup === b.sup && a.sub === b.sub;
+      return same ? { type:'eq', tok:a } : { type:'fmt', tokA:a, tokB:b };
+    }
+    return op === 'del'
+      ? { type:'del', tok:tokA[iA] }
+      : { type:'ins', tok:tokB[iB] };
+  });
+}
+
+// ═══════════════════════════════════════════════════════════════
+// 7. HTML RENDERING
+// ═══════════════════════════════════════════════════════════════
+const ESC = s => s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+
+// 書式トークンを span の style プロパティに反映する（XSS 安全）
+function applyFmtStyle(span, tok) {
+  if (tok.bold)      span.style.fontWeight     = 'bold';
+  if (tok.italic)    span.style.fontStyle      = 'italic';
+  if (tok.underline) span.style.textDecoration = 'underline';
+  if (tok.sup)     { span.style.verticalAlign = 'super'; span.style.fontSize = '.75em'; }
+  if (tok.sub)     { span.style.verticalAlign = 'sub';   span.style.fontSize = '.75em'; }
+}
+
+// 書式トークンの「同一性キー」（バッチ集約用）
+function fmtKey(tok) {
+  return (tok.bold?'b':'') + (tok.italic?'i':'') + (tok.underline?'u':'')
+       + (tok.sup?'^':'')  + (tok.sub?'v':'');
+}
+
+function getHL() {
+  return { DEL: 'hl-del', ADD: 'hl-add', FMT: 'hl-fmt' };
+}
+
+// DocumentFragment を返す DOM 構築版（innerHTML を使わない）
+function eventsToFrag(events, side) {
+  const { DEL: HL_DEL, ADD: HL_ADD, FMT: HL_FMT } = getHL();
+  const frag = document.createDocumentFragment();
+  let bat = null;
+  const flush = () => {
+    if (!bat) return;
+    if (bat.h || bat.fmtTok) {
+      const span = document.createElement('span');
+      if (bat.h) span.className = bat.h;
+      if (bat.fmtTok) applyFmtStyle(span, bat.fmtTok);
+      span.appendChild(document.createTextNode(bat.t));
+      frag.appendChild(span);
+    } else {
+      frag.appendChild(document.createTextNode(bat.t));
+    }
+    bat = null;
+  };
+
+  for (const ev of events) {
+    if (ev.type === 'ins' && side === 'L') continue;
+    if (ev.type === 'del' && side === 'R') continue;
+
+    let tok, hl;
+    if      (ev.type === 'eq')  { tok = ev.tok;                            hl = '';     }
+    else if (ev.type === 'del') { tok = ev.tok;                            hl = HL_DEL; }
+    else if (ev.type === 'ins') { tok = ev.tok;                            hl = HL_ADD; }
+    else /* fmt */              { tok = side === 'L' ? ev.tokA : ev.tokB;  hl = HL_FMT; }
+
+    // brk トークンはバッチに混ぜず独立した span で出力（v1.9）
+    if (tok.brk) {
+      flush();
+      const span = document.createElement('span');
+      span.className = hl ? `brk ${hl}` : 'brk';
+      span.appendChild(document.createTextNode(tok.ch));
+      frag.appendChild(span);
+      continue;
+    }
+
+    const key = fmtKey(tok) + '|' + hl;
+    if (bat && bat.k === key) {
+      bat.t += tok.ch;
+    } else {
+      flush();
+      bat = { k: key, fmtTok: tok, h: hl, t: tok.ch };
+    }
+  }
+  flush();
+  // 空フラグメントには &nbsp; 相当を入れる（行が潰れないように）
+  if (!frag.firstChild) frag.appendChild(document.createTextNode('\u00a0'));
+  return frag;
+}
+
+function plainLineFrag(toks) {
+  const frag = document.createDocumentFragment();
+  if (!toks || toks.length === 0) {
+    frag.appendChild(document.createTextNode('\u00a0'));
+    return frag;
+  }
+  let bat = null;
+  const flushBat = () => {
+    if (!bat) return;
+    if (bat.fmtTok) {
+      const span = document.createElement('span');
+      applyFmtStyle(span, bat.fmtTok);
+      span.appendChild(document.createTextNode(bat.t));
+      frag.appendChild(span);
+    } else {
+      frag.appendChild(document.createTextNode(bat.t));
+    }
+    bat = null;
+  };
+  for (const tok of toks) {
+    if (tok.brk) {
+      flushBat();
+      const span = document.createElement('span');
+      span.className = 'brk';
+      span.appendChild(document.createTextNode(tok.ch));
+      frag.appendChild(span);
+      continue;
+    }
+    const key = fmtKey(tok);
+    if (bat && bat.k === key) bat.t += tok.ch;
+    else {
+      flushBat();
+      bat = { k: key, fmtTok: tok, t: tok.ch };
+    }
+  }
+  flushBat();
+  if (!frag.firstChild) frag.appendChild(document.createTextNode('\u00a0'));
+  return frag;
+}
+
+// ═══════════════════════════════════════════════════════════════
+// 7b. ROW HEIGHT EQUALIZATION
+// ═══════════════════════════════════════════════════════════════
+function equalizeRowHeights() {
+  const leftRows  = document.querySelectorAll('#cL .dl');
+  const rightRows = document.querySelectorAll('#cR .dl');
+  const count = Math.min(leftRows.length, rightRows.length);
+  for (let i = 0; i < count; i++) {
+    leftRows[i].style.height = '';
+    rightRows[i].style.height = '';
+  }
+  const heights = [];
+  for (let i = 0; i < count; i++) {
+    heights.push(Math.max(leftRows[i].offsetHeight, rightRows[i].offsetHeight));
+  }
+  for (let i = 0; i < count; i++) {
+    const h = heights[i] + 'px';
+    leftRows[i].style.height = h;
+    rightRows[i].style.height = h;
+  }
+}
+
+// ═══════════════════════════════════════════════════════════════
+// 7c. LINE-BREAK RE-ALIGNMENT (ver.1.9)
+//     一方に余分な改行がある場合に行を自動連結してから差分を取る
+// ═══════════════════════════════════════════════════════════════
+
+// 不一致領域ごとの処理上限（これを超えるペアは連結判定をスキップ）。
+// v1.12: 領域内 char 差分を Myers（inlineDiffOps）に変更したため、DP テーブル用の
+// メモリ上限だった PP_PRODUCT_CAP（N×M）は不要になり撤廃。Myers はメモリ線形で
+// 時間は O(N·D)（D=編集距離）なので、最悪時間（大きく かつ 大きく異なる領域）を
+// 抑えるために片側の文字数だけを上限とする。最悪 D≈2N でも N·2N が概ね 10^8 に
+// 収まる値（旧実装は積 10M で実効的に片側 ~3000 字で諦めていた）。
+const PP_SIDE_CAP    = 8_000;   // aChars.length または bChars.length の上限
+const PP_SIM_RATIO   = 0.4;     // 類似度下限：一致長 / 平均文字数
+
+// 1 文字目のトークン形式を引き継いだ ↲ マーカーを作る
+function makeBrkTok() {
+  return { ch: '↲', bold:false, italic:false, underline:false, sup:false, sub:false, brk:true };
+}
+
+// 与えられた行配列に対し「連結すべき改行位置」の真偽配列を返す。
+// 位置 i は「lines[i] と lines[i+1] の間の改行」に対応。
+// unmatchedFlags[i] === true なら、その改行は相手側に対応物がなく、連結対象。
+function mergeLinesByFlags(lines, unmatchedFlags) {
+  if (lines.length <= 1) return lines;
+  const result = [];
+  let current = lines[0].slice();
+  for (let i = 0; i < lines.length - 1; i++) {
+    if (unmatchedFlags[i]) {
+      // 連結：↲ マーカー + 次の行のトークン列
+      // 境界の空白は削除しない（意味のある単語間スペースが失われるため）
+      current.push(makeBrkTok());
+      for (const tok of lines[i + 1]) current.push(tok);
+    } else {
+      // 改行を維持
+      result.push(current);
+      current = lines[i + 1].slice();
+    }
+  }
+  result.push(current);
+  return result;
+}
+
+// 不一致領域（delLines × insLines）内で文字単位 LCS を走らせ、
+// 各サイドの改行が相手に対応するかを判定する。
+const NL_SENTINEL = '\x00'; // 改行専用センチネル（通常テキストには出現しない）
+
+function analyzeRegionLineBreaks(delLines, insLines) {
+  // 両側とも1行以下なら改行は存在しない → 何もしない
+  if (delLines.length <= 1 && insLines.length <= 1) {
+    return { lA: delLines, lB: insLines };
+  }
+
+  // ── 文字配列を構築（NL_SENTINEL で改行を表現）──
+  const aChars = [], aNewlineIdxAt = [];
+  for (let li = 0; li < delLines.length; li++) {
+    if (li > 0) {
+      aNewlineIdxAt[aChars.length] = li - 1;
+      aChars.push(NL_SENTINEL);
+    }
+    for (const tok of delLines[li]) {
+      aNewlineIdxAt[aChars.length] = -1;
+      aChars.push(tok.ch === NL_SENTINEL ? ' ' : tok.ch);
+    }
+  }
+  const bChars = [], bNewlineIdxAt = [];
+  for (let li = 0; li < insLines.length; li++) {
+    if (li > 0) {
+      bNewlineIdxAt[bChars.length] = li - 1;
+      bChars.push(NL_SENTINEL);
+    }
+    for (const tok of insLines[li]) {
+      bNewlineIdxAt[bChars.length] = -1;
+      bChars.push(tok.ch === NL_SENTINEL ? ' ' : tok.ch);
+    }
+  }
+
+  // サイズガード（v1.12: Myers はメモリ線形のため積ではなく片側長で制限）
+  if (aChars.length > PP_SIDE_CAP || bChars.length > PP_SIDE_CAP) {
+    return { lA: delLines, lB: insLines };
+  }
+
+  // 領域内 char 差分（v1.12: GNU diff -d / Myers + shift_boundaries）
+  const ops = inlineDiffOps(aChars, bChars);
+
+  // 類似度チェック
+  let eqCount = 0;
+  for (const op of ops) if (op.op === 'eq') eqCount++;
+  const avgLen = (aChars.length + bChars.length) / 2;
+  if (avgLen > 0 && eqCount / avgLen < PP_SIM_RATIO) {
+    return { lA: delLines, lB: insLines };
+  }
+
+  // ── 改行マッチ判定 ──
+  // LCS で各文字がどこにマッピングされるか記録する
+  //   aMap[i] = j: aChars[i] が bChars[j] に eq 対応
+  //   aMap[i] = -1: 対応なし（del）
+  const aMap = new Int32Array(aChars.length).fill(-1);
+  const bMap = new Int32Array(bChars.length).fill(-1);
+  for (const op of ops) {
+    if (op.op === 'eq') {
+      aMap[op.iA] = op.iB;
+      bMap[op.iB] = op.iA;
+    }
+  }
+
+  // A 側の各改行について「対応する B 側の位置」が NL_SENTINEL かを確認
+  // NL_SENTINEL 同士で eq なら「両側に共通の改行」= 保持
+  // そうでなければ「A 側に余分な改行」= 連結対象
+  const aMatched = new Array(Math.max(delLines.length - 1, 0)).fill(false);
+  const bMatched = new Array(Math.max(insLines.length - 1, 0)).fill(false);
+
+  for (let i = 0; i < aChars.length; i++) {
+    if (aChars[i] !== NL_SENTINEL) continue;
+    const ai = aNewlineIdxAt[i];
+    if (ai < 0) continue;
+    const j = aMap[i];
+    if (j >= 0 && bChars[j] === NL_SENTINEL) {
+      // A の改行が B の改行に直接対応 → 両側保持
+      aMatched[ai] = true;
+      const bi = bNewlineIdxAt[j];
+      if (bi >= 0) bMatched[bi] = true;
+    }
+    // A の改行が B の「非改行文字」に対応 → 偽マッチ → 連結対象のまま
+  }
+
+  // B 側の改行について：上記で未マッチなものを確認
+  // さらに「改行の前後テキストが A 側の改行前後と一致するか」で補正する
+  // （NL_SENTINEL 同士が eq になれなかったケースの救済）
+  //
+  // 具体的には：B の改行位置 k に対して、
+  //   B[k行末] の最後 N 文字 と A[k行末] の最後 N 文字が一致 かつ
+  //   B[k+1行頭] の最初 N 文字 と A[k+1行頭] の最初 N 文字が一致
+  // なら「共通の改行」と見なす
+  //
+  // ただし「行数の非対称が大きい」ケース（例: A=2行, B=16行）では
+  // このヒューリスティックより「連結後の文字列類似度」で判断する方が安全なので、
+  // 行数比が RATIO_THRESHOLD を超えたら全連結を試みる
+  const RATIO_THRESHOLD = 3; // 一方が他方の3倍以上の行数
+  const lineRatio = Math.max(delLines.length, insLines.length) /
+                    Math.min(delLines.length, insLines.length);
+
+  if (lineRatio >= RATIO_THRESHOLD) {
+    // 非対称ケース：行数の多い側の改行はすべて「連結候補」として
+    // 連結後の文字列同士を比較し、改善するなら連結を採用する
+    const aText = delLines.map(l => l.map(t => t.ch).join('')).join(' ');
+    const bText = insLines.map(l => l.map(t => t.ch).join('')).join(' ');
+
+    // 連結によって LCS eq 数が上がるかを確認
+    const aCharsFlat = [...aText];
+    const bCharsFlat = [...bText];
+    // 既に類似度は確認済みなので、連結を採用
+    if (delLines.length < insLines.length) {
+      // B 側が多い → B 側の全改行を連結（A はそのまま）
+      const bAllUnmatched = bMatched.map((m, idx) => !bMatched[idx]);
+      const lA = mergeLinesByFlags(delLines, aMatched.map(m => !m));
+      const lB = mergeLinesByFlags(insLines, bAllUnmatched);
+      return { lA, lB };
+    } else {
+      // A 側が多い → A 側の全改行を連結（B はそのまま）
+      const aAllUnmatched = aMatched.map((m, idx) => !aMatched[idx]);
+      const lA = mergeLinesByFlags(delLines, aAllUnmatched);
+      const lB = mergeLinesByFlags(insLines, bMatched.map(m => !m));
+      return { lA, lB };
+    }
+  }
+
+  // 通常ケース：LCS ベースのマッチ結果を使用
+  const aUnmatched = aMatched.map(m => !m);
+  const bUnmatched = bMatched.map(m => !m);
+  const lA = mergeLinesByFlags(delLines, aUnmatched);
+  const lB = mergeLinesByFlags(insLines, bUnmatched);
+  return { lA, lB };
+}
+
+// トップレベル：行単位 LCS を走らせて不一致領域を見つけ、領域ごとに連結処理する
+function preprocessLineBreaks(lA, lB) {
+  if (lA.length === 0 || lB.length === 0) return { lA, lB };
+
+  // 第1パス：行単位 LCS で一致行を確定
+  const kA = lA.map(l => l.map(t => t.ch).join(''));
+  const kB = lB.map(l => l.map(t => t.ch).join(''));
+  const lineOps = lcs(kA, kB);
+
+  const newLA = [], newLB = [];
+  let i = 0;
+  while (i < lineOps.length) {
+    if (lineOps[i].op === 'eq') {
+      newLA.push(lA[lineOps[i].iA]);
+      newLB.push(lB[lineOps[i].iB]);
+      i++;
+      continue;
+    }
+
+    // 連続する del/ins を1領域として集める
+    const delLs = [], insLs = [];
+    while (i < lineOps.length && lineOps[i].op !== 'eq') {
+      if (lineOps[i].op === 'del') delLs.push(lA[lineOps[i].iA]);
+      else                          insLs.push(lB[lineOps[i].iB]);
+      i++;
+    }
+
+    // 純粋な del のみ / ins のみの領域は連結しない（内部構造を保つ）
+    if (delLs.length === 0 || insLs.length === 0) {
+      for (const l of delLs) newLA.push(l);
+      for (const l of insLs) newLB.push(l);
+      continue;
+    }
+
+    // 両側に行がある領域のみ、文字単位 LCS で改行整列を試みる
+    const { lA: mA, lB: mB } = analyzeRegionLineBreaks(delLs, insLs);
+    for (const l of mA) newLA.push(l);
+    for (const l of mB) newLB.push(l);
+  }
+
+  return { lA: newLA, lB: newLB };
+}
+
+// ═══════════════════════════════════════════════════════════════
+// 8. MAIN DIFF
+// ═══════════════════════════════════════════════════════════════
+function runDiff() {
+  // 差分処理では行頭空白を保持する（v1.9）。
+  // 行頭空白の扱いによって改行整列の結果が変わるため。
+  const rawA = extractLines(eA, false, true), rawB = extractLines(eB, false, true);
+
+  if (!eA.textContent.trim() && !eB.textContent.trim()) { hideAll(); return; }
+
+  // ── 改行位置の自動整列（v1.9）──
+  //   サイズガードを通過した入力に対してのみ前処理を実行
+  const MAX_LINES = 2000;
+  const MAX_LINE_CHARS = 5000;
+  const nRawA = rawA.length, nRawB = rawB.length;
+  let rawMaxLen = 0;
+  for (const l of rawA) { if (l.length > rawMaxLen) rawMaxLen = l.length; }
+  for (const l of rawB) { if (l.length > rawMaxLen) rawMaxLen = l.length; }
+
+  let lA, lB;
+  if (nRawA > MAX_LINES || nRawB > MAX_LINES || rawMaxLen > MAX_LINE_CHARS) {
+    // 大きすぎる入力は前処理をスキップ（安全優先）
+    lA = rawA; lB = rawB;
+  } else {
+    const pp = preprocessLineBreaks(rawA, rawB);
+    lA = pp.lA; lB = pp.lB;
+  }
+
+  // ── サイズガード（ver.1.8、前処理後の長さで再評価）──
+  const nA = lA.length, nB = lB.length;
+  let maxLineLen = 0;
+  for (const l of lA) { if (l.length > maxLineLen) maxLineLen = l.length; }
+  for (const l of lB) { if (l.length > maxLineLen) maxLineLen = l.length; }
+  const isLarge = (nA > MAX_LINES || nB > MAX_LINES || maxLineLen > MAX_LINE_CHARS);
+
+  if (isLarge) {
+    // 「処理中…」を先に表示してから重い処理を実行
+    const nd = document.getElementById('nd');
+    nd.textContent = `処理中… A: ${nA}行, B: ${nB}行（大きい入力のため時間がかかります）`;
+    nd.style.display = 'block'; nd.style.color = 'var(--fmt-fg)';
+    document.getElementById('ra').style.display  = 'none';
+    document.getElementById('stb').style.display = 'none';
+    document.getElementById('wl').style.display  = 'none';
+    setTimeout(() => { runDiffCore(lA, lB); nd.style.color = ''; }, 30);
+  } else {
+    runDiffCore(lA, lB);
+  }
+}
+
+function runDiffCore(lA, lB) {
+  const nd = document.getElementById('nd');
+  nd.textContent = '✓ 差分はありません（テキスト・書式ともに同一です）';
+  nd.style.display = 'none';
+
+  const kA = lA.map(l => l.map(t => t.ch).join(''));
+  const kB = lB.map(l => l.map(t => t.ch).join(''));
+  const lineOps = lcs(kA, kB);
+
+  const paired = [];
+  let i = 0;
+  while (i < lineOps.length) {
+    const { op, iA, iB } = lineOps[i];
+    if (op === 'eq') {
+      paired.push({ type:'eq', la:lA[iA], lb:lB[iB] }); i++;
+    } else {
+      const dels = [], ins = [];
+      while (i < lineOps.length && lineOps[i].op !== 'eq') {
+        const { op:o2, iA:ia2, iB:ib2 } = lineOps[i];
+        if (o2 === 'del') dels.push(lA[ia2]); else ins.push(lB[ib2]);
+        i++;
+      }
+      // v1.11: 空行と非空行を分けてペアリング
+      // 空行（content が無い）が混じると、それより後ろの行の対応がずれて
+      // 「内容が近い行同士」が横並びにならなくなる問題を回避する。
+      // 非空行同士を順序通りにペア化し、余った空行は単独 del/ins として残す。
+      const isEmpty = (line) => !line || line.length === 0;
+      const delNonEmpty = [], delEmpty = [];
+      const insNonEmpty = [], insEmpty = [];
+      for (const d of dels) (isEmpty(d) ? delEmpty : delNonEmpty).push(d);
+      for (const it of ins) (isEmpty(it) ? insEmpty : insNonEmpty).push(it);
+
+      // 空行は出現順を保ったまま、非空行ペアリングの後ろに付ける方針
+      // （色帯として「追加・削除された空行」が見えるように残す）
+      const pairLen = Math.max(delNonEmpty.length, insNonEmpty.length);
+      for (let k = 0; k < pairLen; k++) {
+        const hd = k < delNonEmpty.length, hi = k < insNonEmpty.length;
+        if (hd && hi) paired.push({ type:'chg', la:delNonEmpty[k], lb:insNonEmpty[k] });
+        else if (hd)  paired.push({ type:'del', la:delNonEmpty[k] });
+        else          paired.push({ type:'ins', lb:insNonEmpty[k] });
+      }
+      // 余った空行を del / ins として追加
+      for (const e of delEmpty) paired.push({ type:'del', la:e });
+      for (const e of insEmpty) paired.push({ type:'ins', lb:e });
+    }
+  }
+
+  for (const p of paired) {
+    if (p.type === 'eq' || p.type === 'chg') {
+      p.evs = inlineDiff(p.la || [], p.lb || []);
+    }
+  }
+
+  scrollSyncData = buildScrollSync(paired);
+
+  const anyChange = paired.some(p => {
+    if (p.type !== 'eq') return true;
+    return p.evs && p.evs.some(e => e.type !== 'eq');
+  });
+
+  if (!anyChange) {
+    document.getElementById('nd').style.display  = 'block';
+    document.getElementById('ra').style.display  = 'none';
+    document.getElementById('stb').style.display = 'none';
+    document.getElementById('wl').style.display  = 'none';
+    document.getElementById('nav').style.display = 'none';
+    document.getElementById('sav-section').style.display = 'none';
+    document.getElementById('pf').style.display = 'none';
+    return;
+  }
+  document.getElementById('nd').style.display = 'none';
+  document.getElementById('wl').style.display = 'none';
+
+  const lFrag = document.createDocumentFragment();
+  const rFrag = document.createDocumentFragment();
+  let lN = 1, rN = 1, cC = 0, cD = 0, cA = 0, cF = 0;
+
+  // 1 行を <div class="dl …"><span class="ln">…</span><span class="lc">…</span></div> として組み立て
+  const mkLine = (cls, num, contentFrag) => {
+    const dl = document.createElement('div');
+    dl.className = 'dl ' + cls;
+    const ln = document.createElement('span');
+    ln.className = 'ln';
+    ln.textContent = String(num);
+    const lc = document.createElement('span');
+    lc.className = 'lc';
+    lc.appendChild(contentFrag);
+    dl.appendChild(ln);
+    dl.appendChild(lc);
+    return dl;
+  };
+  const ghost = () => {
+    const dl = document.createElement('div');
+    dl.className = 'dl mt';
+    const ln = document.createElement('span');
+    ln.className = 'ln';
+    const lc = document.createElement('span');
+    lc.className = 'lc';
+    lc.appendChild(document.createTextNode('\u00a0'));
+    dl.appendChild(ln);
+    dl.appendChild(lc);
+    return dl;
+  };
+
+  for (const p of paired) {
+    if (p.type === 'eq') {
+      const hasFmt = p.evs && p.evs.some(e => e.type === 'fmt');
+      if (hasFmt) {
+        lFrag.appendChild(mkLine('fmt', lN++, eventsToFrag(p.evs, 'L')));
+        rFrag.appendChild(mkLine('fmt', rN++, eventsToFrag(p.evs, 'R')));
+        cF++;
+      } else {
+        lFrag.appendChild(mkLine('eq', lN++, plainLineFrag(p.la)));
+        rFrag.appendChild(mkLine('eq', rN++, plainLineFrag(p.lb)));
+      }
+    } else if (p.type === 'del') {
+      lFrag.appendChild(mkLine('del', lN++, plainLineFrag(p.la)));
+      rFrag.appendChild(ghost()); cD++;
+    } else if (p.type === 'ins') {
+      lFrag.appendChild(ghost());
+      rFrag.appendChild(mkLine('add', rN++, plainLineFrag(p.lb))); cA++;
+    } else {
+      lFrag.appendChild(mkLine('del', lN++, eventsToFrag(p.evs, 'L')));
+      rFrag.appendChild(mkLine('add', rN++, eventsToFrag(p.evs, 'R')));
+      cC++;
+    }
+  }
+
+  // ヘッダ（.ch）を残しつつ、それ以降を差し替える
+  const cL = document.getElementById('cL');
+  const cR = document.getElementById('cR');
+  // 既存の .dl 行をすべて除去（.ch は保持）
+  for (const sel of [cL, cR]) {
+    const rows = sel.querySelectorAll('.dl');
+    rows.forEach(r => r.remove());
+  }
+  // .ch が万一失われていた場合に備えて再生成
+  if (!cL.querySelector('.ch')) {
+    const ch = document.createElement('div'); ch.className = 'ch'; ch.textContent = 'A — 変更前';
+    cL.insertBefore(ch, cL.firstChild);
+  }
+  if (!cR.querySelector('.ch')) {
+    const ch = document.createElement('div'); ch.className = 'ch'; ch.textContent = 'B — 変更後';
+    cR.insertBefore(ch, cR.firstChild);
+  }
+  cL.appendChild(lFrag);
+  cR.appendChild(rFrag);
+  document.getElementById('ra').style.display = 'block';
+  document.getElementById('pf').style.display = 'block';
+
+  equalizeRowHeights();
+
+  const stb = document.getElementById('stb');
+  stb.style.display = 'flex';
+  document.getElementById('sc').textContent  = cC;
+  document.getElementById('sd').textContent  = cD;
+  document.getElementById('sa').textContent  = cA;
+  document.getElementById('sf').textContent  = cF;
+  document.getElementById('sac').textContent = eA.textContent.length.toLocaleString();
+  document.getElementById('sbc').textContent = eB.textContent.length.toLocaleString();
+
+  document.getElementById('sav-section').style.display = ''; // ver.1.6
+
+  initNav();
+}
+
+function hideAll() {
+  ['ra','stb','nd','nav','pf'].forEach(id => document.getElementById(id).style.display = 'none');
+  document.getElementById('sav-section').style.display = 'none'; // ver.1.6
+  document.getElementById('wl').style.display  = '';
+}
+
+// ═══════════════════════════════════════════════════════════════
+// 9. EVENTS
+// ═══════════════════════════════════════════════════════════════
+document.getElementById('cmp').addEventListener('click', runDiff);
+
+document.getElementById('clr').addEventListener('click', () => {
+  eA.replaceChildren();
+  eB.replaceChildren();
+  hA.style.display = hB.style.display = '';
+  ccA.textContent = ccB.textContent = '0文字';
+  scrollSyncData = null;
+  hideAll();
+  // 結果カラムをヘッダのみの状態に戻す
+  for (const [id, label] of [['cL', 'A — 変更前'], ['cR', 'B — 変更後']]) {
+    const col = document.getElementById(id);
+    col.replaceChildren();
+    const ch = document.createElement('div');
+    ch.className = 'ch';
+    ch.textContent = label;
+    col.appendChild(ch);
+  }
+});
+
+document.addEventListener('keydown', e => {
+  if ((e.ctrlKey || e.metaKey) && e.key === 'Enter') runDiff();
+});
+
+// ═══════════════════════════════════════════════════════════════
+// 10. DIFF NAVIGATION
+// ═══════════════════════════════════════════════════════════════
+let navItems = [], navIdx = -1;
+
+function initNav() {
+  const leftRows  = Array.from(document.querySelectorAll('#cL .dl'));
+  const rightRows = Array.from(document.querySelectorAll('#cR .dl'));
+
+  const total = Math.max(leftRows.length, rightRows.length);
+  navItems = [];
+  for (let i = 0; i < total; i++) {
+    const l = leftRows[i], r = rightRows[i];
+    const isDiff = (l && (l.classList.contains('del') || l.classList.contains('fmt'))) ||
+                   (r && (r.classList.contains('add') || r.classList.contains('fmt')));
+    if (isDiff) navItems.push(i);
+  }
+
+  const nav = document.getElementById('nav');
+  if (navItems.length === 0) { nav.style.display = 'none'; return; }
+
+  navIdx = -1;
+  nav.style.display = 'flex';
+  updateNav();
+}
+
+function updateNav() {
+  const total = navItems.length;
+  document.getElementById('nc').textContent = navIdx >= 0 ? `${navIdx + 1} / ${total}` : `— / ${total}`;
+  document.getElementById('np').disabled = navIdx <= 0;
+  document.getElementById('nn').disabled = navIdx >= total - 1;
+}
+
+function jumpTo(idx) {
+  navIdx = idx;
+  const leftRows  = Array.from(document.querySelectorAll('#cL .dl'));
+  const rightRows = Array.from(document.querySelectorAll('#cR .dl'));
+  const rowIdx = navItems[idx];
+  const target = leftRows[rowIdx] || rightRows[rowIdx];
+  if (target) {
+    const ra = document.getElementById('ra');
+    const MARGIN = 8;
+    const targetTop = target.getBoundingClientRect().top;
+    const raTop     = ra.getBoundingClientRect().top;
+    ra.scrollTop += targetTop - raTop - MARGIN;
+    [leftRows[rowIdx], rightRows[rowIdx]].forEach(el => {
+      if (!el) return;
+      el.style.boxShadow = 'inset 0 0 0 2px var(--acc)';
+      setTimeout(() => { el.style.boxShadow = ''; }, 800);
+    });
+  }
+  updateNav();
+}
+
+document.getElementById('nn').addEventListener('click', () => {
+  if (navIdx < navItems.length - 1) jumpTo(navIdx + 1);
+});
+document.getElementById('np').addEventListener('click', () => {
+  if (navIdx > 0) jumpTo(navIdx - 1);
+});
+
+// ═══════════════════════════════════════════════════════════════
+// 11. SCROLL SYNC FOR INPUT EDITORS (ver.1.5)
+// ═══════════════════════════════════════════════════════════════
+let scrollSyncData = null;
+let isSyncing = false;
+
+function buildScrollSync(paired) {
+  let aIdx = 0, bIdx = 0;
+  const anchors = [];
+  for (const p of paired) {
+    if (p.type === 'eq' || p.type === 'chg') {
+      anchors.push({ a: aIdx, b: bIdx });
+      aIdx++; bIdx++;
+    } else if (p.type === 'del') {
+      aIdx++;
+    } else { // ins
+      bIdx++;
+    }
+  }
+  anchors.push({ a: aIdx, b: bIdx });
+  return { anchors, totalA: aIdx, totalB: bIdx };
+}
+
+function syncMapLine(anchors, fromKey, toKey, pos) {
+  if (anchors.length < 2) return pos;
+  const last = anchors[anchors.length - 1];
+  if (pos <= anchors[0][fromKey]) return anchors[0][toKey];
+  if (pos >= last[fromKey]) return last[toKey];
+  for (let i = 0; i < anchors.length - 1; i++) {
+    const lo = anchors[i], hi = anchors[i + 1];
+    if (pos >= lo[fromKey] && pos <= hi[fromKey]) {
+      const r = hi[fromKey] - lo[fromKey];
+      if (r === 0) return lo[toKey];
+      return lo[toKey] + (pos - lo[fromKey]) / r * (hi[toKey] - lo[toKey]);
+    }
+  }
+  return pos;
+}
+
+function handleSyncScroll(srcEd, tgtEd, fromKey, toKey) {
+  if (isSyncing || !scrollSyncData) return;
+  isSyncing = true;
+  const { anchors, totalA, totalB } = scrollSyncData;
+  const totalFrom = fromKey === 'a' ? totalA : totalB;
+  const totalTo   = fromKey === 'a' ? totalB : totalA;
+  const maxFrom = srcEd.scrollHeight - srcEd.clientHeight;
+  const maxTo   = tgtEd.scrollHeight - tgtEd.clientHeight;
+  if (maxFrom > 0 && maxTo > 0 && totalFrom > 0 && totalTo > 0) {
+    const fromLine = (srcEd.scrollTop / maxFrom) * totalFrom;
+    const toLine   = syncMapLine(anchors, fromKey, toKey, fromLine);
+    tgtEd.scrollTop = (toLine / totalTo) * maxTo;
+  }
+  requestAnimationFrame(() => { isSyncing = false; });
+}
+
+eA.addEventListener('scroll', () => handleSyncScroll(eA, eB, 'a', 'b'));
+eB.addEventListener('scroll', () => handleSyncScroll(eB, eA, 'b', 'a'));
+
+// ウィンドウリサイズ時に行の折り返しが変わるため高さを再計算
+{
+  let resizeTimer = null;
+  window.addEventListener('resize', () => {
+    if (document.getElementById('ra').style.display === 'block') {
+      clearTimeout(resizeTimer);
+      resizeTimer = setTimeout(equalizeRowHeights, 100);
+    }
+  });
+}
+
+// ═══════════════════════════════════════════════════════════════
+// 12. SAVE AS HTML (ver.1.6)
+//     比較結果をスタンドアロン HTML ファイルとして保存
+// ═══════════════════════════════════════════════════════════════
+function saveAsHTML() {
+  const now = new Date();
+  const pad = n => String(n).padStart(2, '0');
+  const ts  = `${now.getFullYear()}${pad(now.getMonth()+1)}${pad(now.getDate())}-${pad(now.getHours())}${pad(now.getMinutes())}${pad(now.getSeconds())}`;
+  const filename = `rifff-diff-${ts}.html`;
+  const dateStr  = now.toLocaleString('ja-JP');
+
+  const isLight = document.body.classList.contains('light');
+  const themeVars = isLight
+    ? `:root{--bg:#f6f8fa;--sur:#ffffff;--sur2:#f0f2f5;--bor:#d0d7de;--txt:#1f2328;--mut:#656d76;--acc:#0969da;--del-ln:#ffd7d7;--del-br:#cf222e;--add-ln:#ccf0d4;--add-br:#1a7f37;--fmt-ln:#fde8a0;--fmt-br:#bf8700;--fmt-fg:#7d4e00;--hl-del-bg:rgba(207,34,46,.18);--hl-del-fg:#a0000a;--hl-add-bg:rgba(26,127,55,.20);--hl-add-fg:#0a6020;--hl-fmt-bg:rgba(191,135,0,.25);--hl-fmt-fg:#7d4e00;--ln-color:#8090a0;--mt-stripe:rgba(0,0,0,.05);--badge-bg:#fff3cd;--badge-fg:#7d4e00;--badge-br:#f0c060;--fm:'JetBrains Mono','Courier New',monospace;--fu:'Noto Sans JP',sans-serif}`
+    : `:root{--bg:#0e1117;--sur:#161b22;--sur2:#1c2330;--bor:#30363d;--txt:#e6edf3;--mut:#8b949e;--acc:#58a6ff;--del-ln:#3d1f1f;--del-br:#ff6b6b;--add-ln:#1a2f1a;--add-br:#3fb950;--fmt-ln:#261c08;--fmt-br:#ffa020;--fmt-fg:#ffc060;--hl-del-bg:rgba(255,68,68,.38);--hl-del-fg:#ff9999;--hl-add-bg:rgba(86,211,100,.30);--hl-add-fg:#7ee787;--hl-fmt-bg:rgba(255,150,0,.42);--hl-fmt-fg:#ffd080;--ln-color:#6e7a8a;--mt-stripe:rgba(255,255,255,.04);--badge-bg:#2a1800;--badge-fg:#ffc060;--badge-br:#4a3000;--fm:'JetBrains Mono','Courier New',monospace;--fu:'Noto Sans JP',sans-serif}`;
+
+  const sc  = document.getElementById('sc').textContent;
+  const sd  = document.getElementById('sd').textContent;
+  const sa  = document.getElementById('sa').textContent;
+  const sf  = document.getElementById('sf').textContent;
+  const sac = document.getElementById('sac').textContent;
+  const sbc = document.getElementById('sbc').textContent;
+
+  // 左右の .dl 行を <tr> にペアリング
+  // → テーブルの同一行内セルはブラウザが自動で高さを揃えるため
+  //   横幅変更後も左右がずれない
+  const leftRows  = Array.from(document.querySelectorAll('#cL .dl'));
+  const rightRows = Array.from(document.querySelectorAll('#cR .dl'));
+  const rowCount  = Math.max(leftRows.length, rightRows.length);
+
+  // v1.11: innerHTML 文字列連結を避け、DOM API で <tbody> を組み立てる
+  // ライブ DOM の .lc 内ノードを cloneNode(true) で複製してから
+  // ブラウザ標準シリアライザ（outerHTML）で一度だけ文字列化する
+  const tbody = document.createElement('tbody');
+
+  function appendCells(tr, row) {
+    if (!row) {
+      const tdLn = document.createElement('td');
+      tdLn.className = 'ln';
+      const tdLc = document.createElement('td');
+      tdLc.className = 'lc';
+      tdLc.appendChild(document.createTextNode('\u00a0'));
+      tr.appendChild(tdLn);
+      tr.appendChild(tdLc);
+      return;
+    }
+    const cls = [...row.classList].filter(c => c !== 'dl').join(' ');
+    const ln  = row.querySelector('.ln');
+    const lc  = row.querySelector('.lc');
+
+    // .ln（行番号）セル：テキストのみなので textContent で安全
+    const tdLn = document.createElement('td');
+    tdLn.className = ('ln ' + cls).trim();
+    if (ln) tdLn.textContent = ln.textContent;
+    tr.appendChild(tdLn);
+
+    // .lc（コンテンツ）セル：子ノードを cloneNode(true) で複製
+    const tdLc = document.createElement('td');
+    tdLc.className = ('lc ' + cls).trim();
+    if (lc && lc.childNodes.length > 0) {
+      for (const child of lc.childNodes) {
+        tdLc.appendChild(child.cloneNode(true));
+      }
+    } else {
+      tdLc.appendChild(document.createTextNode('\u00a0'));
+    }
+    tr.appendChild(tdLc);
+  }
+
+  for (let i = 0; i < rowCount; i++) {
+    const tr = document.createElement('tr');
+    appendCells(tr, leftRows[i]);
+    appendCells(tr, rightRows[i]);
+    tbody.appendChild(tr);
+  }
+  // tbody を文字列化（このシリアライズはブラウザ標準実装）
+  const tableRows = tbody.innerHTML;
+
+  const html = `<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>rifff 差分結果 - ${dateStr}</title>
+<style>
+${themeVars}
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:var(--bg);color:var(--txt);font-family:var(--fu);padding:16px 20px;min-height:100vh}
+.hd{display:flex;align-items:center;flex-wrap:wrap;gap:10px;background:var(--sur);border:1px solid var(--bor);border-radius:8px 8px 0 0;padding:11px 18px}
+.hd h1{font-size:16px;font-weight:700}
+.hd .ts{font-size:11px;color:var(--mut);font-family:var(--fm);margin-left:auto}
+.badge{font-size:10px;border-radius:10px;padding:2px 8px;font-family:var(--fm);background:var(--badge-bg);color:var(--badge-fg);border:1px solid var(--badge-br)}
+.stb{padding:5px 16px;font-size:11px;color:var(--mut);font-family:var(--fm);background:var(--sur);border:1px solid var(--bor);border-top:none;display:flex;gap:14px;align-items:center;flex-wrap:wrap}
+.leg{display:flex;gap:12px;margin-left:auto;flex-wrap:wrap}
+.li{display:flex;align-items:center;gap:4px;font-size:10px;color:var(--mut)}
+.ld{width:7px;height:7px;border-radius:2px}
+/* ── テーブル構造: 同一 <tr> 内セルの高さはブラウザが自動で揃える ── */
+.diff-table{width:100%;border-collapse:collapse;border:1px solid var(--bor);border-top:none;border-radius:0 0 8px 8px;overflow:hidden;font-family:var(--fm);font-size:13px;line-height:1.7}
+.diff-table thead th{font-size:10px;color:var(--mut);padding:6px 12px;background:var(--sur);border-bottom:1px solid var(--bor);text-transform:uppercase;letter-spacing:.05em;font-weight:normal;text-align:left}
+.diff-table thead th:nth-child(3){border-left:1px solid var(--bor)}
+.diff-table colgroup col:nth-child(1){width:36px}
+.diff-table colgroup col:nth-child(2){width:50%}
+.diff-table colgroup col:nth-child(3){width:36px}
+.diff-table colgroup col:nth-child(4){width:50%}
+/* セル列の区切り */
+.diff-table td.ln{min-width:36px;width:36px;text-align:right;padding:0 6px 0 3px;color:var(--mut);opacity:.4;user-select:none;font-size:10px;border-right:1px solid var(--bor);background:var(--sur2);vertical-align:top;line-height:1.7}
+.diff-table td.lc{padding:0 9px;white-space:pre-wrap;word-break:break-all;vertical-align:top;line-height:1.7}
+/* 左右カラムの区切り線 */
+.diff-table tr td:nth-child(3){border-left:1px solid var(--bor)}
+/* 差分色 */
+td.del{background:var(--del-ln)}
+td.add{background:var(--add-ln)}
+td.fmt{background:var(--fmt-ln)}
+td.eq {background:transparent}
+/* 対応行なし（ゴースト）：斜めストライプで明示 */
+td.mt {
+  background-color:var(--sur2);
+  background-image:repeating-linear-gradient(
+    135deg,
+    transparent 0,
+    transparent 6px,
+    var(--mt-stripe) 6px,
+    var(--mt-stripe) 7px
+  );
+  opacity:1;
+}
+td.lc.del{border-left:3px solid var(--del-br)}
+td.lc.add{border-left:3px solid var(--add-br)}
+td.lc.fmt{border-left:3px solid var(--fmt-br)}
+td.lc.eq, td.lc.mt{border-left:3px solid transparent}
+.hl-del{background:var(--hl-del-bg);color:var(--hl-del-fg)}
+.hl-add{background:var(--hl-add-bg);color:var(--hl-add-fg)}
+.hl-fmt{background:var(--hl-fmt-bg);color:var(--hl-fmt-fg)}
+.brk{color:var(--mut);opacity:.55;font-size:.9em;padding:0 2px;margin-right:1px}
+.hl-del.brk{color:var(--hl-del-fg);opacity:1}
+.hl-add.brk{color:var(--hl-add-fg);opacity:1}
+.hl-fmt.brk{color:var(--hl-fmt-fg);opacity:1}
+.footer{margin-top:14px;font-size:11px;color:var(--mut);font-family:var(--fm);border-top:1px solid var(--bor);padding-top:10px}
+.footer a{color:var(--acc);text-decoration:none}
+</style>
+</head>
+<body>
+<div class="hd">
+  <h1>rifff《ﾘｭﾌﾌ》差分結果</h1>
+  <span class="badge">書式対応</span>
+  <span class="ts">${dateStr}</span>
+</div>
+<div class="stb">
+  変更行：<span style="color:var(--del-br)">${sc}</span>　
+  削除行：<span style="color:var(--del-br)">${sd}</span>　
+  追加行：<span style="color:var(--add-br)">${sa}</span>　
+  書式変更行：<span style="color:var(--fmt-fg)">${sf}</span>
+  <span style="margin-left:auto">A: ${sac}文字 ／ B: ${sbc}文字</span>
+  <div class="leg">
+    <div class="li"><div class="ld" style="background:var(--del-br)"></div>削除</div>
+    <div class="li"><div class="ld" style="background:var(--add-br)"></div>追加</div>
+    <div class="li"><div class="ld" style="background:var(--fmt-br)"></div>書式変更</div>
+  </div>
+</div>
+<table class="diff-table">
+  <colgroup><col><col><col><col></colgroup>
+  <thead><tr><th colspan="2">A — 変更前</th><th colspan="2">B — 変更後</th></tr></thead>
+  <tbody>
+${tableRows}  </tbody>
+</table>
+<p class="footer">
+  Generated by <a href="https://tools.nakaix.com/rifff/" target="_blank">rifff《ﾘｭﾌﾌ》ver.1.12</a>
+  ― ローカル処理 / データ送信なし /
+  Concept &amp; Design: <a href="https://x.com/TadashiNakai" target="_blank">@TadashiNakai</a> /
+  Implementation: Claude (Anthropic)
+</p>
+</body>
+</html>`;
+
+  // ── ダウンロード試行1: Blob + createObjectURL
+  try {
+    const blob = new Blob([html], { type: 'text/html;charset=utf-8' });
+    const url  = URL.createObjectURL(blob);
+    const a    = document.createElement('a');
+    a.href = url; a.download = filename; a.style.display = 'none';
+    document.body.appendChild(a); a.click(); document.body.removeChild(a);
+    setTimeout(() => URL.revokeObjectURL(url), 2000);
+    return;
+  } catch(e1) {}
+
+  // ── ダウンロード試行2: data: URI
+  try {
+    const a = document.createElement('a');
+    a.href = 'data:text/html;charset=utf-8,' + encodeURIComponent(html);
+    a.download = filename; a.style.display = 'none';
+    document.body.appendChild(a); a.click(); document.body.removeChild(a);
+    return;
+  } catch(e2) {}
+
+  // ── フォールバック: 新しいタブで開く
+  const w = window.open('', '_blank');
+  if (w) {
+    w.document.write(html); w.document.close(); w.document.title = filename;
+    alert('新しいタブで差分結果を開きました。\n「ファイル → 名前を付けて保存」で ' + filename + ' として保存してください。');
+  } else {
+    alert('ポップアップがブロックされています。\nブラウザのポップアップ許可設定を確認してください。');
+  }
+}
+
+document.getElementById('sav').addEventListener('click', saveAsHTML);
+
+// ═══════════════════════════════════════════════════════════════
+// 13. HEADER MENU (ver.1.6)
+// ═══════════════════════════════════════════════════════════════
+(function() {
+  const btn   = document.getElementById('menu-btn');
+  const drop  = document.getElementById('menu-drop');
+  const tDark  = document.getElementById('theme-dark');
+  const tLight = document.getElementById('theme-light');
+
+  // ── ドロップダウン開閉 ──
+  btn.addEventListener('click', e => {
+    e.stopPropagation();
+    drop.classList.toggle('open');
+  });
+  document.addEventListener('click', () => drop.classList.remove('open'));
+  drop.addEventListener('click', e => e.stopPropagation());
+
+  // ── テーマ適用 ──
+  function applyTheme(theme) {
+    document.body.classList.toggle('light', theme === 'light');
+    tDark.classList.toggle('active',  theme === 'dark');
+    tLight.classList.toggle('active', theme === 'light');
+    try { localStorage.setItem('rifff-theme', theme); } catch(e) {}
+  }
+
+  const stored = (() => { try { return localStorage.getItem('rifff-theme'); } catch(e) { return null; } })();
+  applyTheme(stored === 'light' ? 'light' : 'dark');
+
+  tDark.addEventListener('click',  () => { applyTheme('dark');  drop.classList.remove('open'); });
+  tLight.addEventListener('click', () => { applyTheme('light'); drop.classList.remove('open'); });
+})();
+
+// ═══════════════════════════════════════════════════════════════
+// DEMO
+// ═══════════════════════════════════════════════════════════════
+(function() {
+  eA.innerHTML =
+    '下記の文章を比較してください。<br>' +
+    '    The model organism Arabidopsis thaliana was grown under 16 h light / 8 h dark <br>' +
+    'conditions. <br>' +
+    'Expression of the drought-response gene RD29A was quantified by RT-PCR.<br>' +
+    'Cellular ATP levels decreased by 42% after 48 h of dehydration stress (p &lt; 0.05).<br>' +
+    'CO2 assimilation was significantly impaired, whereas H2O loss increased 3-fold.<br>' +
+    'Protein abundance was confirmed by western blot (n = 3).<br>' +
+    'We conclude that dehydration activates the ABA signaling pathway in a dose-dependent manner.<br>' +
+    'These results suggest that plants, like graduate students,1 perform poorly under stress.<br>' +
+    '<br>' +
+    '1 Botter BB et al. (2004) J. Fictional Plant Sci. 1, 1-23. [架空文献]';
+
+  eB.innerHTML =
+    '下記の文章を，ﾋﾋ較してくだちい．<br>' +
+    'The model organism <i>Arabidopsis thaliana</i> was grown under 16 h light / 8 h dark conditions.<br>' +
+    'Expression of the drought-response gene <i>RD29A</i> was quantified by qRT-PCR.<br>' +
+    'Cellular ATP levels decreased by 57% after 48 h of dehydration stress (p &lt; 0.01).<br>' +
+    'CO<sub>2</sub> assimilation was significantly impaired, whereas H<sub>2</sub>O loss increased 3-fold.<br>' +
+    'Protein abundance was confirmed by <b>western blot</b> (n = 3).<br>' +
+    'We conclude that dehydration <b>strongly</b> activates the ABA signaling pathway in a dose-dependent manner.<br>' +
+    'These results suggest that plants, like graduate students,<sup>1,2</sup> perform poorly under stress.<br>' +
+    '<br>' +
+    '<sup>1</sup> Botter BB et al. (2004) <i>J. Fictional Plant Sci.</i> 1, 1-23. [架空文献]<br>' +
+    '<sup>2</sup> Bitter J &amp; Batter AB (2024) <i>Imaginary Cell Physiol.</i> 99, 999-1000. [架空文献]';
+
+  hA.style.display = 'none';
+  hB.style.display = 'none';
+  ccA.textContent = eA.textContent.length.toLocaleString() + '文字';
+  ccB.textContent = eB.textContent.length.toLocaleString() + '文字';
+})();
+</script>
+
+</body>
+</html>
