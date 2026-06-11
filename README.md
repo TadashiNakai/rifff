@@ -2,7 +2,7 @@
 
 **リッチテキスト対応の差分比較ツール**
 
-[![Version](https://img.shields.io/badge/version-1.12-blue)](https://tools.nakaix.com/rifff/)
+[![Version](https://img.shields.io/badge/version-1.13-blue)](https://tools.nakaix.com/rifff/)
 [![License](https://img.shields.io/badge/license-MIT%20%2F%20GPL-green)](LICENSE)
 
 ---
@@ -46,7 +46,7 @@
 ## ファイル構成
 
 ```
-index.html          現行バージョン（ver.1.12）
+index.html          現行バージョン（ver.1.13）
 rifff-1.0.html      ver.1.0 アーカイブ
 rifff-1.1.html      ver.1.1 アーカイブ
 rifff-1.2.html      ver.1.2 アーカイブ
@@ -60,6 +60,7 @@ rifff-1.9.html      ver.1.9 アーカイブ
 rifff-1.10.html     ver.1.10 アーカイブ
 rifff-1.11.html     ver.1.11 アーカイブ
 rifff-1.12.html     ver.1.12 アーカイブ
+rifff-1.13.html     ver.1.13 アーカイブ
 ```
 
 単一の HTML ファイルで完結しています。ダウンロードしてブラウザで開くだけで動作します。
@@ -70,6 +71,7 @@ rifff-1.12.html     ver.1.12 アーカイブ
 
 | バージョン | 日付 | 内容 |
 |---|---|---|
+| ver.1.13 | 2026-06-11 | 差分エンジンを GNU diff -d（Myers 法 + 変更境界の整列）に一本化。行レベル LCS（DP法）を撤去し、行内差分と同じエンジン（diffOps）で行単位・文字単位の両方を処理。大入力での再帰スタックあふれ防止（compareseq の反復化）、コスト上限ヒューリスティック（GNU diff 既定動作）、退化分割の保険を追加。ダークモードで空行の一致行が白く見える不具合を修正（eq 行背景を `var(--bg)` に変更） |
 | ver.1.12 | 2026-06-07 | 行内（インライン）差分エンジンを GNU diff -d（Myers 法 + 変更境界の整列）に置換。改行のない長い行でも差分が縮退せず、変更箇所の境界がより自然に。改行位置の自動整列（前処理）も同エンジンを用い、より大きな領域まで整列できるように。[difff-js](https://tools.nakaix.com/difff-js/) と同一アルゴリズムを共有 |
 | ver.1.11 | 2026-05-02 | 空行で挟まれた類似行が横並びにならない不具合を修正。対応行のない箇所を斜めストライプで明示。差分結果レンダリングと HTML 保存機能を DOM API ベースに変更（XSS 耐性向上）。LCS の大入力時メモリ確保にガードを追加 |
 | ver.1.10 | 2026-04-25 | 空行が差分表示で無視される不具合を修正。追加・削除された空行を色帯として表示するように |
@@ -92,7 +94,7 @@ rifff-1.12.html     ver.1.12 アーカイブ
 - [fuseji 《ふせじ》](https://fuseji.jp/) — 個人情報マスキングツール（同作者）
 - [mwcalc 《MWCALC》](https://tools.nakaix.com/mwcalc/) — 化学式から分子量を計算するツール（同作者）
 - [difff 《ﾃﾞｭﾌﾌ》](https://difff.jp/) — 本ツールが着想を得たテキスト差分ツール
-- [difff-js](https://tools.nakaix.com/difff-js/) — difff の JavaScript 移植版（同作者）。v1.12 で差分アルゴリズムを共有
+- [difff-js](https://tools.nakaix.com/difff-js/) — difff の JavaScript 移植版（同作者）。差分アルゴリズムを共有
 
 ---
 
